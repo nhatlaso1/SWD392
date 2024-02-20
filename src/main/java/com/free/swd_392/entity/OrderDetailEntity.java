@@ -9,30 +9,29 @@ import lombok.experimental.FieldNameConstants;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldNameConstants
-@Entity(name = TransactionsEntity.TABLE_NAME)
-public class TransactionsEntity {
-    public static final String TABLE_NAME = "transactions";
+@Entity(name = OrderDetailEntity.TABLE_NAME)
+public class OrderDetailEntity {
+    public static final String TABLE_NAME = "order_details";
 
     @Id
     @UuidGenerator
     private String id;
 
-    private String refTransactionId;
+    private BigDecimal price;
 
-    private BigDecimal amount;
-
-    private String description;
-
-    private LocalDateTime transactionDate;
+    private int quantity;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private UsersEntity users;
+    @JoinColumn(name = "order_id", nullable = false)
+    private OrderEntity order;
+
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "product_id", nullable = false)
+    private ProductEntity product;
 }

@@ -43,6 +43,8 @@ dependencies {
     implementation(platform("org.springframework.fastboot:dependencies:$fastbootVersion"))
 
     implementation "org.springframework.fastboot:boot"
+    implementation "org.springframework.fastboot:rest"
+    implementation "org.springframework.fastboot:jpa"
 }
 
 tasks.named('test') {

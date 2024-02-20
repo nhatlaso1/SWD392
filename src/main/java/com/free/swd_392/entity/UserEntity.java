@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
 import org.hibernate.annotations.UuidGenerator;
+import org.springframework.fastboot.jpa.entity.Audit;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -20,9 +21,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldNameConstants
-@Entity(name = UsersEntity.TABLE_NAME)
-public class UsersEntity {
-    public static final String TABLE_NAME = "users";
+@Entity(name = UserEntity.TABLE_NAME)
+public class UserEntity extends Audit<String> {
+    public static final String TABLE_NAME = "user";
 
     @Id
     @UuidGenerator
@@ -44,6 +45,6 @@ public class UsersEntity {
 
     private boolean status;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = TransactionsEntity.Fields.users)
-    private List<TransactionsEntity> transactions;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = TransactionEntity.Fields.user)
+    private List<TransactionEntity> transactions;
 }
