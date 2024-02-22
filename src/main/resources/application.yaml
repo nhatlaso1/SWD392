@@ -1,0 +1,74 @@
+server:
+  port: ${SERVER_PORT:8080}
+  path: ${SERVER_PATH:}
+
+spring:
+  application:
+    name: auction-project
+  profiles:
+    active: ${ENV:dev}
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/auction_swd_392}
+    username: ${SPRING_DATASOURCE_USER:user}
+    password: ${SPRING_DATASOURCE_PASSWORD:password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: hikari-score
+      auto-commit: true
+      data-source-properties:
+        cachePrepStmts: true
+        prepStmtCacheSize: 250
+        prepStmtCacheSqlLimit: 2048
+        useServerPrepStmts: true
+        reWriteBatchedInserts: true
+      minimum-idle: 3
+      maximum-pool-size: 20
+    type: com.zaxxer.hikari.HikariDataSource
+  jpa:
+    properties:
+      hibernate:
+        show_sql: false
+        jdbc:
+          batch_size: 100
+        order_inserts: true
+    hibernate:
+      ddl-auto: update
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+    open-in-view: false
+  main:
+    allow-bean-definition-overriding: true
+  firebase:
+    project-name: ${SPRING_FIREBASE_PROJECT_NAME:auction}
+    config-path: ${SPRING_FIREBASE_CONFIG_PATH:path}
+  security:
+    user:
+      name: sample
+      password: password
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://securetoken.google.com/${spring.firebase.project-name}
+          jwk-set-uri: https://www.googleapis.com/robot/v1/metadata/jwk/securetoken@system.gserviceaccount.com
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: ${SPRING_DOC_ENABLED:true}
+  swagger-ui:
+    enabled: ${SWAGGER_UI_ENABLED:true}
+    operations-sorter: alpha
+    tags-sorter: alpha
+    url: ${server.path}/v3/api-docs
+    config-url: ${server.path}/v3/api-docs/swagger-config
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

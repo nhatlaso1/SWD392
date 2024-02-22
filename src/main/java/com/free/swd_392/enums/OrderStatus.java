@@ -1,5 +1,11 @@
 package com.free.swd_392.enums;
 
 public enum OrderStatus {
-    PAID, UNPAID
+    NEW,
+    CHECKOUT,
+    PAID,
+    FAILED,
+    DELIVERED,
+    RETURNED,
+    COMPLETED
 }
