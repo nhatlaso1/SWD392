@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.2'
     id 'io.spring.dependency-management' version '1.1.4'
+    id 'org.graalvm.buildtools.native' version '0.9.28'
 }
 
 group = 'com.free'
@@ -24,27 +25,94 @@ repositories {
 }
 
 ext {
-    fastbootVersion = '2.0.0-SNAPSHOT'
+
+    /**
+     * Jackson
+     */
+    jacksonBomVersion = '2.15.3'
+
+    /**
+     * Data
+     */
+    hibernateVersion = '6.4.1.Final'
+    mysqlVersion = '8.3.0'
+    hypersistenceVersion = '3.7.3'
+
+    /**
+     * Spring Boot
+     */
+    springBootVersion = '3.2.2'
+    springCloudVersion = '2022.0.3'
+    springDocVersion = '2.3.0'
+
+    /**
+     * Utils
+     */
+    firebaseVersion = '9.2.0'
+    jjwtVersion = '0.11.5'
+    lombokVersion = '1.18.30'
+    mapstructVersion = '1.5.5.Final'
+    lombokMapstructBindingVersion = '0.2.0'
+    commonLang3Version = '3.13.0'
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    compileOnly 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    runtimeOnly 'com.mysql:mysql-connector-j'
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test'
 
-    implementation(platform("org.springframework.fastboot:dependencies:$fastbootVersion"))
+    implementation platform("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
+    implementation platform("io.jsonwebtoken:jjwt-root:$jjwtVersion")
 
-    implementation "org.springframework.fastboot:boot"
-    implementation "org.springframework.fastboot:rest"
-    implementation "org.springframework.fastboot:jpa"
+    /**
+     * Spring Boot
+     */
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+    implementation "org.springframework.boot:spring-boot-actuator"
+    implementation "org.springframework.boot:spring-boot-starter-aop"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    implementation "org.springframework.boot:spring-boot-starter-security"
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation "org.springframework.boot:spring-boot-starter-validation"
+    implementation("org.springframework.boot:spring-boot-starter-web") {
+        exclude module: "spring-boot-starter-tomcat"
+    }
+    implementation "org.springframework.boot:spring-boot-starter-undertow"
+    implementation "org.springframework.boot.aot:org.springframework.boot.aot.gradle.plugin:$springBootVersion@pom"
+
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocVersion") {
+        exclude module: 'spring-webmvc'
+    }
+
+    /**
+     * Data
+     */
+    implementation "com.mysql:mysql-connector-j:$mysqlVersion"
+    implementation "org.hibernate.orm:hibernate-envers:$hibernateVersion"
+    implementation "io.hypersistence:hypersistence-utils-hibernate-60:$hypersistenceVersion"
+
+    /**
+     * Utils
+     */
+    // Firebase
+    implementation ("com.google.firebase:firebase-admin:$firebaseVersion") {
+        exclude group: "commons-logging", module: "commons-logging"
+    }
+
+    // JWT
+    implementation "io.jsonwebtoken:jjwt-impl:$jjwtVersion"
+    implementation "io.jsonwebtoken:jjwt-api"
+    implementation "io.jsonwebtoken:jjwt-jackson"
+
+    // Lombok
+    compileOnly "org.projectlombok:lombok:$lombokVersion"
+    annotationProcessor "org.projectlombok:lombok:$lombokVersion"
+
+    //Mapstruct
+    compileOnly "org.mapstruct:mapstruct:$mapstructVersion"
+    compileOnly "org.projectlombok:lombok-mapstruct-binding:$lombokMapstructBindingVersion"
+    annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
+
+    //Utilities
+    implementation "org.apache.commons:commons-lang3:$commonLang3Version"
+
 }
 
 tasks.named('test') {
