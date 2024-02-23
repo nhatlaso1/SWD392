@@ -7,7 +7,7 @@
     <property name="LOG_PATTERN"
               value="[%-5level][${APP_ENV}][%d{yyyy-MM-dd HH:mm:ss.SSS}][%t][%c{1}]:%L:[%.10(%X{sessionId})][%X{path}] - %m%n"/>
 
-    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>
                 ${CONSOLE_LOG_PATTERN}
@@ -16,23 +16,23 @@
     </appender>
 
     <root level="${DEBUG_LEVEL:-INFO}">
-        <appender-ref ref="Console"/>
+        <appender-ref ref="STDOUT"/>
     </root>
 
-    <logger name="org.hibernate.SQL" level="info" additivity="false">
-        <appender-ref ref="Console"/>
+    <logger name="org.hibernate.SQL" level="debug" additivity="false">
+        <appender-ref ref="STDOUT"/>
     </logger>
-    <logger name="org.hibernate.orm.jdbc.bind" level="info" additivity="false">
-        <appender-ref ref="Console"/>
+    <logger name="org.hibernate.orm.jdbc.bind" level="trace" additivity="false">
+        <appender-ref ref="STDOUT"/>
     </logger>
-    <logger name="org.hibernate.stat" level="info" additivity="false">
-        <appender-ref ref="Console"/>
+    <logger name="org.hibernate.stat" level="debug" additivity="false">
+        <appender-ref ref="STDOUT"/>
     </logger>
     <logger name="org.hibernate.SQL_SLOW" level="info" additivity="false">
-        <appender-ref ref="Console"/>
+        <appender-ref ref="STDOUT"/>
     </logger>
-    <logger name="org.hibernate.cache" level="info" additivity="false">
-        <appender-ref ref="Console"/>
+    <logger name="org.hibernate.cache" level="debug" additivity="false">
+        <appender-ref ref="STDOUT"/>
     </logger>
 
 </configuration>

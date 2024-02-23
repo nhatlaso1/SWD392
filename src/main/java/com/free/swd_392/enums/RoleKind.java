@@ -1,6 +1,6 @@
 package com.free.swd_392.enums;
 
-public enum GroupKind {
+public enum RoleKind {
 
     CMS,
     SUPER_ADMIN,

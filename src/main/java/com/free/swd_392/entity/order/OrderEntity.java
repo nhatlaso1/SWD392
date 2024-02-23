@@ -1,7 +1,7 @@
 package com.free.swd_392.entity.order;
 
-import com.free.swd_392.entity.user.UserEntity;
 import com.free.swd_392.entity.audit.Audit;
+import com.free.swd_392.entity.user.UserEntity;
 import com.free.swd_392.enums.OrderStatus;
 import com.free.swd_392.enums.order.PaymentMethod;
 import com.free.swd_392.shared.constant.TableName;
@@ -24,15 +24,16 @@ import static org.springframework.data.jpa.domain.AbstractAuditable_.CREATED_BY;
 @Entity
 @Table(name = TableName.ORDER)
 @Audited
-public class OrderEntity extends Audit<UUID> {
+public class OrderEntity extends Audit<String> {
 
     @Id
     @UuidGenerator
     private UUID id;
     @NotAudited
+    @Column(length = 50)
     private String receiverFullName;
     @NotAudited
-    @Column(columnDefinition = "varchar(10)")
+    @Column(length = 10)
     private String phone;
     @NotAudited
     private Long provinceId;
@@ -41,6 +42,7 @@ public class OrderEntity extends Audit<UUID> {
     @NotAudited
     private Long wardId;
     @NotAudited
+    @Column(length = 150)
     private String addressDetails;
     @NotAudited
     private BigDecimal subTotal;

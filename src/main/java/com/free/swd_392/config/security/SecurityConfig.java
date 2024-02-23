@@ -1,5 +1,7 @@
 package com.free.swd_392.config.security;
 
+import com.free.swd_392.config.security.properties.IgnoreAuthorizationProperties;
+import com.free.swd_392.converter.JwtConverter;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
@@ -8,6 +10,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.security.SecuritySchemes;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -15,13 +18,14 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableMethodSecurity(jsr250Enabled = true, securedEnabled = true)
 @RequiredArgsConstructor
 @SecuritySchemes(
@@ -37,31 +41,34 @@ import java.util.List;
         }
 )
 @OpenAPIDefinition(
-        info = @Info(title = "Auction SWD_392 API", version = "1.0.0", description = "API documentation of Auction SWD_392 v1.0.0"),
+        info = @Info(title = "SWD_392 Auction API", version = "1.0.0", description = "API documentation of SWD_392 Auction v1.0.0"),
         security = @SecurityRequirement(name = "Authorization")
 )
+@EnableConfigurationProperties(IgnoreAuthorizationProperties.class)
 public class SecurityConfig {
+
+    private final IgnoreAuthorizationProperties ignoreAuthorizationProperties;
+    private final JwtDecoder jwtDecoder;
+    private final JwtConverter jwtConverter;
+    private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .cors(this::configCors)
                 .authorizeHttpRequests(
-                        customizer -> customizer.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                .requestMatchers(
-                                        "/webjars/swagger-ui/**",
-                                        "/v3/api-docs/**",
-                                        "/swagger-resources/**",
-                                        "/webjars/**",
-                                        "/swagger-ui/**"
-                                ).permitAll()
+                        customizer -> customizer
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                .requestMatchers(ignoreAuthorizationProperties.getIgnoreAuthorization().toArray(String[]::new)).permitAll()
                                 .anyRequest().authenticated()
+
                 )
                 .oauth2ResourceServer(oauth2Configurer -> oauth2Configurer
-                        .jwt(jwtConfigurer -> {
-                        })
+                        .jwt(jwtConfigurer -> jwtConfigurer.jwtAuthenticationConverter(new JwtConverter()))
                 )
-                .exceptionHandling(exCustomizer -> exCustomizer.authenticationEntryPoint(new RestAuthenticationEntryPoint()))
+                .authenticationProvider(new JwtAuthProvider(jwtDecoder, jwtConverter))
+                .exceptionHandling(exCustomizer -> exCustomizer.authenticationEntryPoint(restAuthenticationEntryPoint))
                 .logout(logoutConfigurer -> logoutConfigurer
                         .logoutUrl("/api/v1/auth/logout")
                         .permitAll()
