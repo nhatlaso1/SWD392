@@ -1,7 +1,7 @@
 package com.free.swd_392.entity.payment;
 
-import com.free.swd_392.entity.user.UserEntity;
 import com.free.swd_392.entity.audit.Audit;
+import com.free.swd_392.entity.user.UserEntity;
 import com.free.swd_392.enums.TransactionStatus;
 import com.free.swd_392.shared.constant.TableName;
 import jakarta.persistence.*;
@@ -22,7 +22,7 @@ import java.util.UUID;
 @FieldNameConstants
 @Entity
 @Table(name = TableName.PAYMENT_TRANSACTION)
-public class TransactionEntity extends Audit<UUID> {
+public class TransactionEntity extends Audit<String> {
 
     @Id
     @UuidGenerator
@@ -38,7 +38,7 @@ public class TransactionEntity extends Audit<UUID> {
     @Enumerated(EnumType.STRING)
     private TransactionStatus status;
     @Column(name = "user_id", nullable = false)
-    private UUID userId;
+    private String userId;
 
     @ToString.Exclude
     @OneToOne(fetch = FetchType.LAZY, targetEntity = UserEntity.class, optional = false)

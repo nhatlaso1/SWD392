@@ -34,7 +34,7 @@ public class OrderItemEntity {
     @Type(JsonType.class)
     @Column(columnDefinition = "JSON")
     private List<ProductConfigDto> extraVariant;
-    @Column(columnDefinition = "MEDIUMTEXT")
+    @Column(length = 200)
     private String note;
     @Column(name = "order_id", updatable = false, nullable = false)
     private UUID orderId;

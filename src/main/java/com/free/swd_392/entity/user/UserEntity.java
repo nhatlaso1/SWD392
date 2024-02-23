@@ -6,7 +6,6 @@ import com.free.swd_392.shared.constant.TableName;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldNameConstants;
-import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -18,12 +17,11 @@ import java.util.UUID;
 @FieldNameConstants
 @Entity
 @Table(name = TableName.USER)
-public class UserEntity extends Audit<UUID> {
+public class UserEntity extends Audit<String> {
 
     @Id
-    @UuidGenerator
-    @Column(updatable = false, nullable = false)
-    private UUID id;
+    @Column(length = 32, updatable = false, nullable = false)
+    private String id;
     @Column(length = 50)
     private String name;
     @Column(length = 50)
@@ -38,7 +36,10 @@ public class UserEntity extends Audit<UUID> {
     private LocalDate birthday;
     @Column(columnDefinition = "BOOLEAN DEFAULT true")
     private boolean active = true;
+    @Column(name = "role_id", nullable = false)
+    private UUID roleId;
 
+    @Setter(AccessLevel.NONE)
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = RoleEntity.class, optional = false)
     @JoinColumn(

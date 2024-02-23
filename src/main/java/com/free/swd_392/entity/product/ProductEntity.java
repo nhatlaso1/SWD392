@@ -12,8 +12,6 @@ import lombok.experimental.FieldNameConstants;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.util.UUID;
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -21,13 +19,15 @@ import java.util.UUID;
 @FieldNameConstants
 @Entity
 @Table(name = TableName.PRODUCT)
-public class ProductEntity extends Audit<UUID> {
+public class ProductEntity extends Audit<String> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(length = 200)
     private String name;
-    @Column(name = "description", columnDefinition = "MEDIUMTEXT")
+    @Column(columnDefinition = "MEDIUMTEXT")
     private String description;
+    @Column(length = 2083)
     private String image;
     @Enumerated(EnumType.STRING)
     private ProductStatus status;

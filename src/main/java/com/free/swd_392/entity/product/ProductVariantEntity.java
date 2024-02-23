@@ -16,7 +16,8 @@ public class ProductVariantEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(length = 200)
     private String name;
-    private String ordering;
+    private Integer ordering;
     private Boolean isSoldOut;
 }

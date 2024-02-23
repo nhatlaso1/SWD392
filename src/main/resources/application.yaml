@@ -50,25 +50,38 @@ spring:
     user:
       name: sample
       password: password
+    path-matcher:
+      ignore-authorization:
+        - /webjars/swagger-ui/**
+        - /v3/api-docs/**
+        - /swagger-resources/**
+        - /webjars/**
+        - /swagger-ui/**
+        - /swagger-ui.html
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: https://securetoken.google.com/${spring.firebase.project-name}
           jwk-set-uri: https://www.googleapis.com/robot/v1/metadata/jwk/securetoken@system.gserviceaccount.com
 
-springdoc:
-  api-docs:
-    path: /v3/api-docs
-    enabled: ${SPRING_DOC_ENABLED:true}
-  swagger-ui:
-    enabled: ${SWAGGER_UI_ENABLED:true}
-    operations-sorter: alpha
-    tags-sorter: alpha
-    url: ${server.path}/v3/api-docs
-    config-url: ${server.path}/v3/api-docs/swagger-config
+#springdoc:
+#  api-docs:
+#    path: /v3/api-docs
+#    enabled: ${SPRING_DOC_ENABLED:true}
+#  swagger-ui:
+#    enabled: ${SWAGGER_UI_ENABLED:true}
+#    operations-sorter: alpha
+#    tags-sorter: alpha
+#    url: ${server.path}/v3/api-docs
+#    config-url: ${server.path}/v3/api-docs/swagger-config
 
 management:
   endpoints:
     web:
       exposure:
         include: '*'
+
+logging:
+  level:
+    com.free.swd_392: trace
+#    org.springframework.security: debug

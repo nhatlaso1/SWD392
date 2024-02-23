@@ -11,7 +11,6 @@ import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -20,7 +19,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(name = TableName.PAYMENT_WALLET)
-public class WalletEntity extends Audit<UUID> {
+public class WalletEntity extends Audit<String> {
 
     @Id
     @UuidGenerator
@@ -30,7 +29,7 @@ public class WalletEntity extends Audit<UUID> {
     @Enumerated(EnumType.STRING)
     private WalletStatus status;
     @Column(name = "user_id", nullable = false)
-    private UUID userId;
+    private String userId;
 
     @ToString.Exclude
     @OneToOne(fetch = FetchType.LAZY, targetEntity = UserEntity.class, optional = false)
