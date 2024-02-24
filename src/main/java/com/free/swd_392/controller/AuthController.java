@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -55,7 +56,11 @@ public class AuthController extends BaseController {
             user.setRoleId(role.getId());
             firebaseAuth.setCustomUserClaims(
                     userRecord.getUid(),
-                    Map.of("role", role.getKind().name())
+                    Map.of("resource_access", Map.of(
+                                    "roles",
+                                    List.of("ROLE_" + role.getKind().name())
+                            )
+                    )
             );
             user = userRepository.save(user);
             applicationEventPublisher.publishEvent(new UserCreatedEvent(user.getId()));

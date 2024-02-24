@@ -687,10 +687,6 @@ public class DefaultUserDetails implements UserDetails {
         protected Access() {
         }
 
-        public static AccessBuilder builder() {
-            return new AccessBuilder();
-        }
-
         /**
          * Get roles
          *
@@ -756,35 +752,6 @@ public class DefaultUserDetails implements UserDetails {
             verifyCaller = required;
             return this;
         }
-
-        public static class AccessBuilder {
-            private Set<String> roles;
-            private Boolean verifyCaller;
-
-            AccessBuilder() {
-            }
-
-            @JsonProperty("roles")
-            public AccessBuilder roles(Set<String> roles) {
-                this.roles = roles;
-                return this;
-            }
-
-            @JsonProperty("verify_caller")
-            public AccessBuilder verifyCaller(Boolean verifyCaller) {
-                this.verifyCaller = verifyCaller;
-                return this;
-            }
-
-            public Access build() {
-                return new Access(roles, verifyCaller);
-            }
-
-            @Override
-            public String toString() {
-                return "DefaultUserDetails.Access.AccessBuilder(roles=" + roles + ", verifyCaller=" + verifyCaller + ")";
-            }
-        }
     }
 
     /**
@@ -834,10 +801,6 @@ public class DefaultUserDetails implements UserDetails {
         protected AddressClaimSet() {
         }
 
-        public static AddressClaimSetBuilder builder() {
-            return new AddressClaimSetBuilder();
-        }
-
         public String getFormattedAddress() {
             return formattedAddress;
         }
@@ -860,63 +823,6 @@ public class DefaultUserDetails implements UserDetails {
 
         public String getCountry() {
             return country;
-        }
-
-        public static class AddressClaimSetBuilder {
-            private String formattedAddress;
-            private String streetAddress;
-            private String locality;
-            private String region;
-            private String postalCode;
-            private String country;
-
-            AddressClaimSetBuilder() {
-            }
-
-            @JsonProperty("formatted")
-            public AddressClaimSetBuilder formattedAddress(String formattedAddress) {
-                this.formattedAddress = formattedAddress;
-                return this;
-            }
-
-            @JsonProperty("street_address")
-            public AddressClaimSetBuilder streetAddress(String streetAddress) {
-                this.streetAddress = streetAddress;
-                return this;
-            }
-
-            @JsonProperty("locality")
-            public AddressClaimSetBuilder locality(String locality) {
-                this.locality = locality;
-                return this;
-            }
-
-            @JsonProperty("region")
-            public AddressClaimSetBuilder region(String region) {
-                this.region = region;
-                return this;
-            }
-
-            @JsonProperty("postal_code")
-            public AddressClaimSetBuilder postalCode(String postalCode) {
-                this.postalCode = postalCode;
-                return this;
-            }
-
-            @JsonProperty("country")
-            public AddressClaimSetBuilder country(String country) {
-                this.country = country;
-                return this;
-            }
-
-            public AddressClaimSet build() {
-                return new AddressClaimSet(formattedAddress, streetAddress, locality, region, postalCode, country);
-            }
-
-            @Override
-            public String toString() {
-                return "DefaultUserDetails.AddressClaimSet.AddressClaimSetBuilder(formattedAddress=" + formattedAddress + ", streetAddress=" + streetAddress + ", locality=" + locality + ", region=" + region + ", postalCode=" + postalCode + ", country=" + country + ")";
-            }
         }
     }
 }
