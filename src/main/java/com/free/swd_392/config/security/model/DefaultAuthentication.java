@@ -59,7 +59,6 @@ public class DefaultAuthentication extends AbstractAuthenticationToken implement
         return getToken();
     }
 
-
     @Override
     public Object getPrincipal() {
         return principal;

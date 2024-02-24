@@ -1,4 +1,4 @@
-package com.free.swd_392.dto.common;
+package com.free.swd_392.core.model;
 
 import java.io.Serializable;
 

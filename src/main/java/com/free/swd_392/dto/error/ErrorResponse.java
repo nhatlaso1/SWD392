@@ -1,6 +1,6 @@
 package com.free.swd_392.dto.error;
 
-import com.free.swd_392.dto.common.BaseResponse;
+import com.free.swd_392.core.model.BaseResponse;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;

@@ -10,6 +10,7 @@ public class WebCommonConfiguration {
 
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer jacksonFeatureCustomizer() {
-        return builder -> builder.featuresToEnable(MapperFeature.DEFAULT_VIEW_INCLUSION);
+        return builder -> builder
+                .featuresToEnable(MapperFeature.DEFAULT_VIEW_INCLUSION);
     }
 }

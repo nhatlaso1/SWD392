@@ -1,10 +1,9 @@
 package com.free.swd_392.config.security;
 
 import com.free.swd_392.config.security.model.DefaultAuthentication;
+import com.free.swd_392.core.converter.JwtConverter;
 import com.free.swd_392.exception.InvalidException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.core.convert.converter.Converter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
@@ -16,37 +15,28 @@ import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.util.Assert;
 
-/**
- * Jwt auth provider
- */
+@Slf4j
 public class JwtAuthProvider implements AuthenticationProvider {
 
-    private final Log logger = LogFactory.getLog(getClass());
-
     private final JwtDecoder jwtDecoder;
+    private final JwtConverter jwtConverter;
 
-    private final Converter<Jwt, DefaultAuthentication> jwtAuthenticationConverter;
-
-    /**
-     * @param jwtDecoder {@link JwtDecoder}
-     */
-    public JwtAuthProvider(JwtDecoder jwtDecoder, Converter<Jwt, DefaultAuthentication> jwtAuthenticationConverter) {
+    public JwtAuthProvider(JwtDecoder jwtDecoder, JwtConverter jwtConverter) {
         Assert.notNull(jwtDecoder, "jwtDecoder cannot be null");
         this.jwtDecoder = jwtDecoder;
-        this.jwtAuthenticationConverter = jwtAuthenticationConverter;
+        this.jwtConverter = jwtConverter;
     }
-
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         DefaultAuthentication bearer = (DefaultAuthentication) authentication;
         Jwt jwt = getJwt(bearer);
-        DefaultAuthentication token = jwtAuthenticationConverter.convert(jwt);
+        DefaultAuthentication token = jwtConverter.convert(jwt);
         if (token == null) {
             throw new InvalidException("Invalid Token");
         }
         token.setDetails(bearer.getDetails());
-        logger.debug("Authenticated token");
+        log.debug("Authenticated token");
         return token;
     }
 
@@ -54,7 +44,7 @@ public class JwtAuthProvider implements AuthenticationProvider {
         try {
             return jwtDecoder.decode(bearer.getToken());
         } catch (BadJwtException failed) {
-            logger.debug("Failed to authenticate since the JWT was invalid");
+            log.debug("Failed to authenticate since the JWT was invalid");
             throw new InvalidBearerTokenException(failed.getMessage(), failed);
         } catch (JwtException failed) {
             throw new AuthenticationServiceException(failed.getMessage(), failed);

@@ -1,4 +1,4 @@
-package com.free.swd_392.converter;
+package com.free.swd_392.core.converter;
 
 import com.free.swd_392.config.security.model.DefaultAuthentication;
 import com.free.swd_392.config.security.model.DefaultUserDetails;
