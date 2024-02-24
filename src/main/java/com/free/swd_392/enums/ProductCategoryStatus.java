@@ -1,5 +1,5 @@
 package com.free.swd_392.enums;
 
-public enum CategoryStatus {
+public enum ProductCategoryStatus {
     ACTIVE, INACTIVE
 }

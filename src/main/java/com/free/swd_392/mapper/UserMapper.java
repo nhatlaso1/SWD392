@@ -1,5 +1,6 @@
 package com.free.swd_392.mapper;
 
+import com.free.swd_392.core.mapper.BaseMapper;
 import com.free.swd_392.dto.user.UserDetails;
 import com.free.swd_392.dto.user.UserInfo;
 import com.free.swd_392.dto.user.request.RegisterUserRequest;

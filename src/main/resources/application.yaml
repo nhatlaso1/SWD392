@@ -58,22 +58,27 @@ spring:
         - /webjars/**
         - /swagger-ui/**
         - /swagger-ui.html
+        - /actuator/**
+        - /mock/**
+        - /api/v1/app/*/public/**
+        - /api/v1/media/**
+        - /api/v1/auth/**
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: https://securetoken.google.com/${spring.firebase.project-name}
           jwk-set-uri: https://www.googleapis.com/robot/v1/metadata/jwk/securetoken@system.gserviceaccount.com
 
-#springdoc:
-#  api-docs:
-#    path: /v3/api-docs
-#    enabled: ${SPRING_DOC_ENABLED:true}
-#  swagger-ui:
-#    enabled: ${SWAGGER_UI_ENABLED:true}
-#    operations-sorter: alpha
-#    tags-sorter: alpha
-#    url: ${server.path}/v3/api-docs
-#    config-url: ${server.path}/v3/api-docs/swagger-config
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: ${SPRING_DOC_ENABLED:true}
+  swagger-ui:
+    enabled: ${SWAGGER_UI_ENABLED:true}
+    operations-sorter: alpha
+    tags-sorter: alpha
+    url: ${server.path}/v3/api-docs
+    config-url: ${server.path}/v3/api-docs/swagger-config
 
 management:
   endpoints:

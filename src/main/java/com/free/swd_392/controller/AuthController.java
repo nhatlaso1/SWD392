@@ -1,6 +1,6 @@
 package com.free.swd_392.controller;
 
-import com.free.swd_392.dto.common.BaseResponse;
+import com.free.swd_392.core.model.BaseResponse;
 import com.free.swd_392.dto.user.UserDetails;
 import com.free.swd_392.dto.user.request.RegisterUserRequest;
 import com.free.swd_392.enums.RoleKind;
@@ -13,7 +13,6 @@ import com.free.swd_392.shared.utils.JwtUtils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
