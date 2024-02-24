@@ -2,7 +2,7 @@ package com.free.swd_392.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
-import com.free.swd_392.dto.common.IBaseData;
+import com.free.swd_392.core.model.IBaseData;
 import lombok.Data;
 
 @Data

@@ -1,4 +1,4 @@
-package com.free.swd_392.mapper;
+package com.free.swd_392.core.mapper;
 
 import org.mapstruct.InheritConfiguration;
 import org.mapstruct.MappingTarget;

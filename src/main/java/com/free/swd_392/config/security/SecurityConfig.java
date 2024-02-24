@@ -1,7 +1,7 @@
 package com.free.swd_392.config.security;
 
 import com.free.swd_392.config.security.properties.IgnoreAuthorizationProperties;
-import com.free.swd_392.converter.JwtConverter;
+import com.free.swd_392.core.converter.JwtConverter;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
@@ -51,7 +51,6 @@ public class SecurityConfig {
     private final JwtDecoder jwtDecoder;
     private final JwtConverter jwtConverter;
     private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
-
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
