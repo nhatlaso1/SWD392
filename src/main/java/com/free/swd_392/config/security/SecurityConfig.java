@@ -1,5 +1,7 @@
 package com.free.swd_392.config.security;
 
+import com.free.swd_392.config.security.filter.ApiKeyFilter;
+import com.free.swd_392.config.security.properties.ApiKeyProperties;
 import com.free.swd_392.config.security.properties.IgnoreAuthorizationProperties;
 import com.free.swd_392.core.converter.JwtConverter;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -20,6 +22,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
@@ -37,6 +40,11 @@ import java.util.List;
                         scheme = "bearer",
                         in = SecuritySchemeIn.HEADER,
                         description = "Access token"
+                ),
+                @SecurityScheme(
+                        name = "x-api-key",
+                        type = SecuritySchemeType.APIKEY,
+                        in = SecuritySchemeIn.HEADER
                 )
         }
 )
@@ -44,16 +52,22 @@ import java.util.List;
         info = @Info(title = "SWD_392 Auction API", version = "1.0.0", description = "API documentation of SWD_392 Auction v1.0.0"),
         security = @SecurityRequirement(name = "Authorization")
 )
-@EnableConfigurationProperties(IgnoreAuthorizationProperties.class)
+@EnableConfigurationProperties({IgnoreAuthorizationProperties.class, ApiKeyProperties.class})
 public class SecurityConfig {
 
     private final IgnoreAuthorizationProperties ignoreAuthorizationProperties;
+    private final ApiKeyProperties apiKeyProperties;
     private final JwtDecoder jwtDecoder;
     private final JwtConverter jwtConverter;
     private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        if (apiKeyProperties != null) {
+            for (var apiKey : apiKeyProperties.getApiKey()) {
+                http.addFilterAfter(new ApiKeyFilter(apiKey.getPath(), apiKey.getKey()), LogoutFilter.class);
+            }
+        }
         return http.csrf(AbstractHttpConfigurer::disable)
                 .cors(this::configCors)
                 .authorizeHttpRequests(

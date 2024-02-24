@@ -16,7 +16,13 @@ import java.util.UUID;
 @NoArgsConstructor
 @FieldNameConstants
 @Entity
-@Table(name = TableName.USER)
+@Table(
+        name = TableName.USER,
+        indexes = {
+                @Index(name = "idx_user_phone", columnList = "phone", unique = true),
+                @Index(name = "idx_user_email", columnList = "email", unique = true),
+        }
+)
 public class UserEntity extends Audit<String> {
 
     @Id

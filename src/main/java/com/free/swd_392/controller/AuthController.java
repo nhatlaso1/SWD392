@@ -4,11 +4,11 @@ import com.free.swd_392.core.model.BaseResponse;
 import com.free.swd_392.dto.user.UserDetails;
 import com.free.swd_392.dto.user.request.RegisterUserRequest;
 import com.free.swd_392.enums.RoleKind;
-import com.free.swd_392.event.user.UserCreatedEvent;
 import com.free.swd_392.exception.InvalidException;
 import com.free.swd_392.mapper.UserMapper;
 import com.free.swd_392.repository.user.RoleRepository;
 import com.free.swd_392.repository.user.UserRepository;
+import com.free.swd_392.shared.model.event.UserCreatedEvent;
 import com.free.swd_392.shared.utils.JwtUtils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -57,8 +57,10 @@ public class AuthController extends BaseController {
             firebaseAuth.setCustomUserClaims(
                     userRecord.getUid(),
                     Map.of("resource_access", Map.of(
-                                    "roles",
-                                    List.of("ROLE_" + role.getKind().name())
+                                    "auction", Map.of(
+                                            "roles",
+                                            List.of("ROLE_" + role.getKind().name())
+                                    )
                             )
                     )
             );

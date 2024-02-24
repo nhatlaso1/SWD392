@@ -7,6 +7,7 @@ import com.free.swd_392.core.model.BaseResponse;
 import com.free.swd_392.exception.InvalidException;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +21,7 @@ public interface IDeleteModelByIdController<I, A, E> extends
         IdConverter<I, A> {
 
     @DeleteMapping("{id}/delete")
+    @Transactional
     default ResponseEntity<BaseResponse<Object>> deleteModelById(@PathVariable("id") @NotNull I id) {
         preDelete(id);
         aroundDelete(id);

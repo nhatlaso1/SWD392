@@ -1,4 +1,4 @@
-package com.free.swd_392.event.user;
+package com.free.swd_392.shared.model.event;
 
 public record UserCreatedEvent(
         String userId

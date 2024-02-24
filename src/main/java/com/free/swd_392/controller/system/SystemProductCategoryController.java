@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "System Product Category Controller")
 @Transactional
 @RestController
-@RequestMapping("/api/v1/system/product/category")
+@RequestMapping("/api/v1/system/product-category")
 @RequiredArgsConstructor
 public class SystemProductCategoryController extends BaseController implements
         ICreateModelController<Long, ProductCategoryInfo, Long, ProductCategoryEntity>,
