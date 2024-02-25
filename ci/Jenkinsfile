@@ -31,6 +31,8 @@ pipeline {
                         --cache-repo "${ECR_REGISTRY}/${IMAGE_NAME}/cache" \
                         --cache-copy-layers \
                         --cache-run-layers \
+                        --insecure \
+                        --insecure-pull \
                         --insecure-registry "${ECR_REGISTRY}" \
                         --use-new-run=true
                     """
