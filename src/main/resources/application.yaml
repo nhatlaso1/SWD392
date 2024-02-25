@@ -46,10 +46,23 @@ spring:
   firebase:
     project-name: ${SPRING_FIREBASE_PROJECT_NAME:auction}
     config-path: ${SPRING_FIREBASE_CONFIG_PATH:path}
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:username}
+    password: ${MAIL_PASSWORD:password}
+    from: ${MAIL_FROM:mail.from}
+    properties:
+      mail.smtp:
+        starttls.enable: 'true'
+        auth: 'true'
   security:
     user:
       name: sample
       password: password
+    api-key:
+      - path: /api/v1/system/user/admin/create
+        key: zLp63CqnIjCN4n9z
     path-matcher:
       ignore-authorization:
         - /webjars/swagger-ui/**

@@ -13,4 +13,8 @@ public interface UserRepository extends
         JpaRepository<UserEntity, String>,
         JpaSpecificationExecutor<ProductCategoryEntity> {
 
+    boolean existsByEmail(String email);
+
+    boolean existsByPhone(String phone);
+
 }

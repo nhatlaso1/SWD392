@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.free.swd_392.core.model.IBaseData;
 import com.free.swd_392.core.view.View;
 import com.free.swd_392.enums.ProductCategoryStatus;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,6 +28,7 @@ public class ProductCategoryInfo implements IBaseData<Long> {
             View.Include.Create.class,
             View.Include.Update.class
     })
+    @NotBlank
     private String name;
     @JsonView({
             View.Exclude.Create.class,
@@ -46,6 +49,7 @@ public class ProductCategoryInfo implements IBaseData<Long> {
             View.Include.Create.class,
             View.Include.Update.class
     })
+    @NotNull
     private ProductCategoryStatus status;
     @JsonView({
             View.Include.Create.class,

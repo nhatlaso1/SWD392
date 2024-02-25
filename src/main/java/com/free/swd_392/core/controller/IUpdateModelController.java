@@ -12,6 +12,7 @@ import com.free.swd_392.exception.InvalidException;
 import jakarta.validation.Valid;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,7 @@ public interface IUpdateModelController<I, D extends IBaseData<I>, A, E> extends
 
     @PutMapping("update")
     @JsonView(View.Details.class)
+    @Transactional
     default ResponseEntity<BaseResponse<D>> updateModel(
             @JsonView(View.Include.Update.class)
             @RequestBody

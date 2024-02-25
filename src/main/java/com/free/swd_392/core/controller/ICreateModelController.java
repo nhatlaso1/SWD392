@@ -11,6 +11,7 @@ import com.free.swd_392.core.view.View;
 import com.free.swd_392.exception.InvalidException;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +25,7 @@ public interface ICreateModelController<I, D extends IBaseData<I>, A, E> extends
 
     @PostMapping("create")
     @JsonView({View.Details.class})
+    @Transactional
     default ResponseEntity<BaseResponse<D>> createModel(
             @JsonView(View.Include.Create.class)
             @RequestBody

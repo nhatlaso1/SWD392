@@ -29,4 +29,11 @@ public abstract class UserMapper implements BaseMapper<UserInfo, UserDetails, Us
     public abstract UserEntity fromUserRecordToEntity(UserRecord userRecord);
 
     public abstract void updateInfoRegisterToUserEntity(@MappingTarget UserEntity userEntity, RegisterUserRequest request);
+
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "name")
+    @Mapping(target = "photo")
+    @Mapping(target = "gender")
+    @Mapping(target = "birthday")
+    public abstract void updateConvertToEntityApp(@MappingTarget UserEntity entity, UserDetails details);
 }
