@@ -23,8 +23,7 @@ pipeline {
                     sh "cd build/libs && java -Djarmode=layertools -jar ${PROJECT_NAME}-*.jar extract"
                 }
                 container("pusher") {
-                    sh """#!/busybox/sh
-                    /kaniko/executor --context `pwd` \
+                    sh """/kaniko/executor --context `pwd` \
                         --dockerfile `pwd`/Dockerfile \
                         --destination "${ECR_REGISTRY}/${IMAGE_NAME}:${TAG}" \
                         --cache=true \

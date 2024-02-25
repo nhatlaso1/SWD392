@@ -1,6 +1,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
+  name: test-ci
   labels:
     app: jenkins-ci
 spec:
@@ -11,7 +12,7 @@ spec:
         - cat
       tty: true
     - name: pusher
-      image: gcr.io/kaniko-project/executor:debug
+      image: gcr.io/kaniko-project/executor:v1.20.1-debug
       command:
         - cat
       tty: true
