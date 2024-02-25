@@ -11,6 +11,7 @@ pipeline {
         ECR_REGISTRY = "harbor.storage"
         IMAGE_NAME = "auction-swd-392/api"
         TAG = "latest"
+        PROJECT_NAME = "swd_392"
     }
     stages {
         stage('Build') {
@@ -19,7 +20,7 @@ pipeline {
                     sh "sed -i 's/\\/\\/mavenNexus()/maven { url \"http:\\/\\/192.168.1.4:32081\\/repository\\/maven-central\"\\nallowInsecureProtocol true }/g' build.gradle"
                     sh "sed -i '1ipluginManagement { repositories { maven { url \"http://192.168.1.4:32081/repository/maven-central\"\\nallowInsecureProtocol true }}}' settings.gradle"
                     sh "gradle bootJar -x test -i --stacktrace"
-                    sh "cd build/libs && java -Djarmode=layertools -jar parkx-api-*.jar extract"
+                    sh "cd build/libs && java -Djarmode=layertools -jar ${PROJECT_NAME}-*.jar extract"
                 }
                 container("pusher") {
                     sh """#!/busybox/sh
