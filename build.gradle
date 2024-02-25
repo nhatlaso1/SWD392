@@ -19,9 +19,9 @@ configurations {
 }
 
 repositories {
+    //mavenNexus()
     mavenCentral()
     mavenLocal()
-
 }
 
 ext {

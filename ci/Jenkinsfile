@@ -1,0 +1,40 @@
+#!groovy
+
+pipeline {
+    agent {
+        kubernetes {
+            yamlFile "ci/pod_builder.yaml"
+            retries 0
+        }
+    }
+    environment {
+        ECR_REGISTRY = "harbor.storage"
+        IMAGE_NAME = "auction-swd-392/api"
+        TAG = "latest"
+    }
+    stages {
+        stage('Build') {
+            steps {
+                container("builder") {
+                    sh "sed -i 's/\\/\\/mavenNexus()/maven { url \"http:\\/\\/192.168.1.4:32081\\/repository\\/maven-central\"\\nallowInsecureProtocol true }/g' build.gradle"
+                    sh "sed -i '1ipluginManagement { repositories { maven { url \"http://192.168.1.4:32081/repository/maven-central\"\\nallowInsecureProtocol true }}}' settings.gradle"
+                    sh "gradle bootJar -x test -i --stacktrace"
+                    sh "cd build/libs && java -Djarmode=layertools -jar parkx-api-*.jar extract"
+                }
+                container("pusher") {
+                    sh """#!/busybox/sh
+                    /kaniko/executor --context `pwd` \
+                        --dockerfile `pwd`/Dockerfile \
+                        --destination "${ECR_REGISTRY}/${IMAGE_NAME}:${TAG}" \
+                        --cache=true \
+                        --cache-repo "${ECR_REGISTRY}/${IMAGE_NAME}/cache" \
+                        --cache-copy-layers \
+                        --cache-run-layers \
+                        --insecure-registry "${ECR_REGISTRY}" \
+                        --use-new-run=true
+                    """
+                }
+            }
+        }
+    }
+}
