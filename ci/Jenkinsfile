@@ -34,6 +34,9 @@ pipeline {
                         --insecure \
                         --insecure-pull \
                         --insecure-registry "${ECR_REGISTRY}" \
+                        --skip-tls-verify \
+                        --skip-tls-verify-pull \
+                        --skip-tls-verify-registry "${ECR_REGISTRY}" \
                         --use-new-run=true
                     """
                 }
