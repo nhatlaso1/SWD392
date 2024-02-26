@@ -9,7 +9,8 @@ pipeline {
     }
     environment {
         ECR_REGISTRY = "docker.io/distrolessman"
-        ECR_REGISTRY_CACHE = "harbor.storage/auction-swd-392"
+        ECR_REGISTRY_CACHE = "harbor.storage"
+        CACHE_PATH = "/auction-swd-392"
         IMAGE_NAME = "auction-api"
         TAG = "latest"
         PROJECT_NAME_PREFIX = "swd_392"
@@ -28,7 +29,7 @@ pipeline {
                         --dockerfile `pwd`/Dockerfile \
                         --destination "${ECR_REGISTRY}/${IMAGE_NAME}:${TAG}" \
                         --cache=true \
-                        --cache-repo "${ECR_REGISTRY_CACHE}/${IMAGE_NAME}/cache" \
+                        --cache-repo "${ECR_REGISTRY_CACHE}/${CACHE_PATH}/${IMAGE_NAME}/cache" \
                         --cache-copy-layers \
                         --cache-run-layers \
                         --insecure-registry "${ECR_REGISTRY_CACHE}" \
