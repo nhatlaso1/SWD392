@@ -8,10 +8,11 @@ pipeline {
         }
     }
     environment {
-        ECR_REGISTRY = "harbor.storage"
-        IMAGE_NAME = "auction-swd-392/api"
+        ECR_REGISTRY = "docker.io/distrolessman"
+        ECR_REGISTRY_CACHE = "harbor.storage/auction-swd-392"
+        IMAGE_NAME = "auction-api"
         TAG = "latest"
-        PROJECT_NAME = "swd_392"
+        PROJECT_NAME_PREFIX = "swd_392"
     }
     stages {
         stage('Build') {
@@ -20,18 +21,18 @@ pipeline {
                     sh "sed -i 's/\\/\\/mavenNexus()/maven { url \"http:\\/\\/192.168.1.4:32081\\/repository\\/maven-central\"\\nallowInsecureProtocol true }/g' build.gradle"
                     sh "sed -i '1ipluginManagement { repositories { maven { url \"http://192.168.1.4:32081/repository/maven-central\"\\nallowInsecureProtocol true }}}' settings.gradle"
                     sh "gradle bootJar -x test -i --stacktrace"
-                    sh "cd build/libs && java -Djarmode=layertools -jar ${PROJECT_NAME}-*.jar extract"
+                    sh "cd build/libs && java -Djarmode=layertools -jar ${PROJECT_NAME_PREFIX}-*.jar extract"
                 }
                 container("pusher") {
                     sh """/kaniko/executor --context `pwd` \
                         --dockerfile `pwd`/Dockerfile \
                         --destination "${ECR_REGISTRY}/${IMAGE_NAME}:${TAG}" \
                         --cache=true \
-                        --cache-repo "${ECR_REGISTRY}/${IMAGE_NAME}/cache" \
+                        --cache-repo "${ECR_REGISTRY_CACHE}/${IMAGE_NAME}/cache" \
                         --cache-copy-layers \
                         --cache-run-layers \
-                        --insecure-registry "${ECR_REGISTRY}" \
-                        --skip-tls-verify-registry "${ECR_REGISTRY}" \
+                        --insecure-registry "${ECR_REGISTRY_CACHE}" \
+                        --skip-tls-verify-registry "${ECR_REGISTRY_CACHE}" \
                     """
                 }
             }
