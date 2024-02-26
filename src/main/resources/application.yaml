@@ -56,6 +56,7 @@ spring:
       mail.smtp:
         starttls.enable: 'true'
         auth: 'true'
+    test-connection: false
   security:
     user:
       name: sample
