@@ -22,6 +22,7 @@ import com.google.firebase.auth.UserRecord;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -60,7 +62,7 @@ public class SystemUserController extends BaseController implements
 
     @Operation(security = @SecurityRequirement(name = "x-api-key"))
     @PostMapping("/admin/create")
-    public ResponseEntity<BaseResponse<UserDetails>> createAdmin(UserDetails details) throws InvalidException {
+    public ResponseEntity<BaseResponse<UserDetails>> createAdmin(@Valid @RequestBody UserDetails details) throws InvalidException {
         preCreateCheck(details);
         String randomPassword = RandomStringUtils.randomAlphanumeric(12);
         UserRecord.CreateRequest request = new UserRecord.CreateRequest()
