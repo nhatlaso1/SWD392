@@ -22,4 +22,4 @@ ENV SERVER_PORT=8080 \
                 -XX:+OptimizeStringConcat"
 EXPOSE $SERVER_PORT
 USER nonroot
-ENTRYPOINT java $JAVA_OPTS org.springframework.boot.loader.JarLauncher
+ENTRYPOINT java $JAVA_OPTS org.springframework.boot.loader.launch.JarLauncher
