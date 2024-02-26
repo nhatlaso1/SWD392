@@ -1,37 +1,23 @@
 package com.free.swd_392.service;
 
 import com.free.swd_392.shared.model.EmailModel;
-import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class EmailService {
-    private final JavaMailSender javaMailSender;
-    private final TemplateEngine htmlTemplateEngine;
+    // private final JavaMailSender javaMailSender;
+    // private final TemplateEngine htmlTemplateEngine;
 
     @Value("${spring.mail.from}")
     private String mailFrom;
@@ -40,7 +26,7 @@ public class EmailService {
     @SneakyThrows
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void sendEmail(EmailModel model) {
-        try {
+        /*try {
             MimeMessage mimeMessage = this.javaMailSender.createMimeMessage();
             MimeMessageHelper message = prepareMessage(mimeMessage, model);
             if (StringUtils.isNotBlank(model.getTemplateName()) && model.isHtml()) {
@@ -54,7 +40,7 @@ public class EmailService {
         } catch (Exception e) {
             log.error("Lỗi gửi mail tới người dùng: {}", e.getMessage());
         }
-        log.info("Gửi mail thành công tới: {}", String.join(", ", model.getTo()));
+        log.info("Gửi mail thành công tới: {}", String.join(", ", model.getTo()));*/
     }
 
     private String reWriteVar(String context, Map<String, Object> map) {
@@ -64,7 +50,7 @@ public class EmailService {
         return context;
     }
 
-    private Context prepareContext(EmailModel model) {
+    /*private Context prepareContext(EmailModel model) {
         // Prepare the evaluation context
         Context ctx = new Context();
         if (Objects.nonNull(model.getParameterMap())) {
@@ -103,5 +89,5 @@ public class EmailService {
         }
 
         return message;
-    }
+    }*/
 }
