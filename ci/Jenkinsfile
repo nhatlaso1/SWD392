@@ -29,7 +29,7 @@ pipeline {
                         --dockerfile `pwd`/Dockerfile \
                         --destination "${ECR_REGISTRY}/${IMAGE_NAME}:${TAG}" \
                         --cache=true \
-                        --cache-repo "${ECR_REGISTRY_CACHE}/${CACHE_PATH}/${IMAGE_NAME}/cache" \
+                        --cache-repo "${ECR_REGISTRY_CACHE}${CACHE_PATH}/${IMAGE_NAME}/cache" \
                         --cache-copy-layers \
                         --cache-run-layers \
                         --insecure-registry "${ECR_REGISTRY_CACHE}" \
