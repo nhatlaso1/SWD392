@@ -1,4 +1,4 @@
-FROM harbor.storage/dkh/distrolessman/java-distroless:alpine-3.19_21.0.1-sem
+FROM harbor.storage/dkh/distrolessman/java-distroless:alpaquita-glibc-240115_17.0.9-sem
 
 WORKDIR /home
 RUN adduser -u 1001 -D nonroot && chmod -R 777 /home && chown -R nonroot /home
