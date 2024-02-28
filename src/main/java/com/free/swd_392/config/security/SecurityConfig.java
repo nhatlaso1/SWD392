@@ -31,27 +31,6 @@ import java.util.List;
 @Configuration(proxyBeanMethods = false)
 @EnableMethodSecurity(jsr250Enabled = true, securedEnabled = true)
 @RequiredArgsConstructor
-@SecuritySchemes(
-        value = {
-                @SecurityScheme(
-                        name = "Authorization",
-                        type = SecuritySchemeType.HTTP,
-                        bearerFormat = "Bearer [token]",
-                        scheme = "bearer",
-                        in = SecuritySchemeIn.HEADER,
-                        description = "Access token"
-                ),
-                @SecurityScheme(
-                        name = "x-api-key",
-                        type = SecuritySchemeType.APIKEY,
-                        in = SecuritySchemeIn.HEADER
-                )
-        }
-)
-@OpenAPIDefinition(
-        info = @Info(title = "SWD_392 Auction API", version = "1.0.0", description = "API documentation of SWD_392 Auction v1.0.0"),
-        security = @SecurityRequirement(name = "Authorization")
-)
 @EnableConfigurationProperties({IgnoreAuthorizationProperties.class, ApiKeyProperties.class})
 public class SecurityConfig {
 
@@ -96,7 +75,7 @@ public class SecurityConfig {
     private void configCors(CorsConfigurer<HttpSecurity> cors) {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.setAllowedOrigins(List.of("*"));
+        corsConfiguration.setAllowedOriginPatterns(List.of("*"));
         corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         corsConfiguration.setAllowedHeaders(List.of("Origin", "Authorization", "Cache-Control", "Content-Type", "Accept", "Accept-Encoding", "X-Requested-With", "remember-me"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

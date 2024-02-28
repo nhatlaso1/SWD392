@@ -33,7 +33,7 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler({InvalidException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleInvalidException(InvalidException e) {
-        log.error("Business Error: ", e);
+        log.error("Business Error: {}", e.getMessage());
         return ErrorResponse.builder()
                 .message(e.getMessage())
                 .success(false)

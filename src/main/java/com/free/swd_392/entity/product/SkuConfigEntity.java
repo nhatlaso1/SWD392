@@ -22,17 +22,16 @@ public class SkuConfigEntity implements Serializable {
     private static final long serialVersionUID = 3L;
 
     @Id
-    @Column(name = "product_config_id")
-    private Long productConfigId;
+    @Column(name = "product_config_id", nullable = false)
+    private Long configId;
     @Id
-    @Column(name = "product_variant_id")
-    private Long productVariantId;
-    @Id
+    @Column(name = "product_variant_id", nullable = false)
+    private Long variantId;
     @Column(name = "sku_id")
     private UUID skuId;
 
     @ToString.Exclude
-    @MapsId("productConfigId")
+    @MapsId("configId")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "product_config_id",
@@ -42,7 +41,7 @@ public class SkuConfigEntity implements Serializable {
     )
     private ProductConfigEntity pConfig;
     @ToString.Exclude
-    @MapsId("productVariantId")
+    @MapsId("variantId")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "product_variant_id",
@@ -52,11 +51,9 @@ public class SkuConfigEntity implements Serializable {
     )
     private ProductVariantEntity variant;
     @ToString.Exclude
-    @MapsId("skuId")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "sku_id",
-            foreignKey = @ForeignKey(name = "fk_sku_config_sku_id"),
             insertable = false,
             updatable = false
     )

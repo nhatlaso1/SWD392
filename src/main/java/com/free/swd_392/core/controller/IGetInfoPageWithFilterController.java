@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -32,9 +33,10 @@ public interface IGetInfoPageWithFilterController<I, T extends IBaseData<I>, A, 
     @GetMapping("info/page/filter")
     @PageableAsQueryParam
     @JsonView(View.Info.class)
+    @Transactional
     default ResponseEntity<BaseResponse<BasePagingResponse<T>>> getInfoPageWithFilter(
             @ParameterObject @Valid F filter,
-            Pageable pageable
+            @ParameterObject Pageable pageable
     ) {
         filter.setPageable(pageable);
         F preFilter = preGetPageInfoWithFilter(filter);
@@ -48,14 +50,16 @@ public interface IGetInfoPageWithFilterController<I, T extends IBaseData<I>, A, 
     default BasePagingResponse<T> aroundGetPageInfoWithFilter(F filter) {
 
         var repository = getRepository();
-        Specification<E> specification = TypeUtils.unwrap(filter);
-        JpaSpecificationExecutor<E> executor = TypeUtils.unwrap(repository);
         Page<E> pageEntity;
-        if (specification != null && executor != null) {
+        try {
+            Specification<E> specification = TypeUtils.unwrap(filter);
+            JpaSpecificationExecutor<E> executor = TypeUtils.unwrap(repository);
             pageEntity = executor.findAll(specification, filter.getPageable());
-        } else {
-            pageEntity = getRepository().findAll(filter.getPageable());
+            return new BasePagingResponse<>(pageEntity, this::convertToInfoList);
+        } catch (ClassCastException e) {
+            // empty
         }
+        pageEntity = getRepository().findAll(filter.getPageable());
         return new BasePagingResponse<>(pageEntity, this::convertToInfoList);
     }
 }

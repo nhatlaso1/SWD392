@@ -11,6 +11,7 @@ import com.free.swd_392.core.view.View;
 import com.free.swd_392.exception.InvalidException;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +25,7 @@ public interface IGetDetailsController<I, D extends IBaseData<I>, A, E> extends
 
     @GetMapping("{id}/details")
     @JsonView(View.Details.class)
+    @Transactional
     default ResponseEntity<BaseResponse<D>> getDetailsById(@PathVariable("id") @NotNull I id) {
         preGetDetails(id);
         return success(aroundGetDetails(id));

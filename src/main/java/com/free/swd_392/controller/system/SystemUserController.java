@@ -46,8 +46,8 @@ import java.util.Map;
 @RequestMapping("/api/v1/system/user")
 @RequiredArgsConstructor
 public class SystemUserController extends BaseController implements
-        ICreateModelController<String, UserDetails, String, UserEntity>,
-        IUpdateModelController<String, UserDetails, String, UserEntity>,
+        ICreateModelController<String, UserDetails, UserDetails, String, UserEntity>,
+        IUpdateModelController<String, UserDetails, UserDetails, String, UserEntity>,
         IDeleteModelByIdController<String, String, UserEntity>,
         IGetInfoPageWithFilterController<String, UserInfo, String, UserEntity, SystemUserPageFilter>,
         IGetDetailsController<String, UserDetails, String, UserEntity>,
@@ -190,7 +190,7 @@ public class SystemUserController extends BaseController implements
 
     @Override
     public UserDetails convertToDetails(UserEntity entity) {
-        return userMapper.convertToDetail(entity);
+        return userMapper.convertToDetails(entity);
     }
 
     @Override

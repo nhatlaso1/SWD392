@@ -9,8 +9,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -31,6 +35,8 @@ public class ProductEntity extends Audit<String> {
     private String image;
     @Enumerated(EnumType.STRING)
     private ProductStatus status;
+    @Column(columnDefinition = "BOOLEAN DEFAULT false")
+    private boolean isSoldOut = false;
     @Column(name = "category_id", nullable = false)
     private Long categoryId;
 
@@ -43,4 +49,13 @@ public class ProductEntity extends Audit<String> {
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
     private ProductCategoryEntity category;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, targetEntity = ProductConfigEntity.class)
+    @JoinColumn(
+            name = "product_id",
+            foreignKey = @ForeignKey(name = "fk_product_config_product_id")
+    )
+    @Fetch(FetchMode.SUBSELECT)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private List<ProductConfigEntity> productConfigs;
 }

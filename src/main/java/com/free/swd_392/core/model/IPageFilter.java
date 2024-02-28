@@ -8,5 +8,6 @@ public interface IPageFilter extends IFilter {
     @JsonIgnore
     Pageable getPageable();
 
+    @JsonIgnore
     void setPageable(Pageable pageable);
 }

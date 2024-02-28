@@ -2,6 +2,7 @@ package com.free.swd_392.repository.product;
 
 import com.free.swd_392.dto.product.ProductCategoryInfo;
 import com.free.swd_392.entity.product.ProductCategoryEntity;
+import com.free.swd_392.exception.InvalidException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -35,4 +36,10 @@ public interface ProductCategoryRepository extends
                         @Param("start") Integer start,
                         @Param("end") Integer end,
                         @Param("coefficient") Integer coefficient);
+
+    default void checkExits(Long categoryId) throws InvalidException {
+        if (!existsById(categoryId)) {
+            throw new InvalidException("Product category id " + categoryId + " not found");
+        }
+    }
 }

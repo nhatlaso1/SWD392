@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AppUserController extends BaseController implements
         IGetDetailsByContextController<String, UserDetails, String, UserEntity>,
-        IUpdateModelController<String, UserDetails, String, UserEntity> {
+        IUpdateModelController<String, UserDetails, UserDetails, String, UserEntity> {
 
     private final UserMapper userMapper;
     private final UserRepository repository;
@@ -42,7 +42,7 @@ public class AppUserController extends BaseController implements
 
     @Override
     public UserDetails convertToDetails(UserEntity entity) {
-        return userMapper.convertToDetail(entity);
+        return userMapper.convertToDetails(entity);
     }
 
     @Override

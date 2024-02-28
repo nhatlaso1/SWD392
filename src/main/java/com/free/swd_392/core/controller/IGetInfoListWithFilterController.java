@@ -15,6 +15,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -29,6 +30,7 @@ public interface IGetInfoListWithFilterController<I, T extends IBaseData<I>, A, 
 
     @GetMapping("list")
     @JsonView(View.Info.class)
+    @Transactional
     default ResponseEntity<BaseResponse<List<T>>> getInfoListWithFilter(@ParameterObject @Valid F filter) {
         F preFilter = preGetInfoListWithFilter(filter);
         return success(aroundGetInfoListWithFilter(preFilter));
@@ -40,10 +42,12 @@ public interface IGetInfoListWithFilterController<I, T extends IBaseData<I>, A, 
 
     default List<T> aroundGetInfoListWithFilter(F filter) {
         var repository = getRepository();
-        Specification<E> specification = TypeUtils.unwrap(filter);
-        JpaSpecificationExecutor<E> executor = TypeUtils.unwrap(repository);
-        if (specification != null && executor != null) {
+        try {
+            Specification<E> specification = TypeUtils.unwrap(filter);
+            JpaSpecificationExecutor<E> executor = TypeUtils.unwrap(repository);
             return convertToInfoList(executor.findAll(specification));
+        } catch (ClassCastException e) {
+            // empty
         }
         return convertToInfoList(getRepository().findAll());
     }

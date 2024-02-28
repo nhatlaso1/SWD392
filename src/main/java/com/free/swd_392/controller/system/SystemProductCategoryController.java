@@ -5,7 +5,7 @@ import com.free.swd_392.core.controller.*;
 import com.free.swd_392.core.model.SuccessResponse;
 import com.free.swd_392.dto.product.ProductCategoryInfo;
 import com.free.swd_392.dto.product.request.ChangeOrderProductCategoryRequest;
-import com.free.swd_392.dto.product.request.ProductCategoryFilter;
+import com.free.swd_392.dto.product.request.filter.ProductCategoryFilter;
 import com.free.swd_392.entity.product.ProductCategoryEntity;
 import com.free.swd_392.exception.InvalidException;
 import com.free.swd_392.mapper.system.SystemProductCategoryMapper;
@@ -26,8 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/system/product-category")
 @RequiredArgsConstructor
 public class SystemProductCategoryController extends BaseController implements
-        ICreateModelController<Long, ProductCategoryInfo, Long, ProductCategoryEntity>,
-        IUpdateModelController<Long, ProductCategoryInfo, Long, ProductCategoryEntity>,
+        ICreateModelController<Long, ProductCategoryInfo, ProductCategoryInfo, Long, ProductCategoryEntity>,
+        IUpdateModelController<Long, ProductCategoryInfo, ProductCategoryInfo, Long, ProductCategoryEntity>,
         IDeleteModelByIdController<Long, Long, ProductCategoryEntity>,
         IGetInfoListWithFilterController<Long, ProductCategoryInfo, Long, ProductCategoryEntity, ProductCategoryFilter>,
         IGetDetailsController<Long, ProductCategoryInfo, Long, ProductCategoryEntity> {
@@ -95,7 +95,7 @@ public class SystemProductCategoryController extends BaseController implements
 
     @Override
     public ProductCategoryInfo convertToDetails(ProductCategoryEntity entity) {
-        return systemProductCategoryMapper.convertToDetail(entity);
+        return systemProductCategoryMapper.convertToDetails(entity);
     }
 
     @Override

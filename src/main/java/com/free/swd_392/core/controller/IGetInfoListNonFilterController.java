@@ -10,6 +10,7 @@ import com.free.swd_392.core.model.IBaseData;
 import com.free.swd_392.core.view.View;
 import com.free.swd_392.exception.InvalidException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -24,6 +25,7 @@ public interface IGetInfoListNonFilterController<I, T extends IBaseData<I>, A, E
 
     @GetMapping("list")
     @JsonView(View.Info.class)
+    @Transactional
     default ResponseEntity<BaseResponse<List<T>>> getInfoList() {
         preGetInfoListNonFilter();
         return success(aroundGetInfoListNonFilter());
