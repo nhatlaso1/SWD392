@@ -77,6 +77,7 @@ spring:
         - /api/v1/app/*/public/**
         - /api/v1/media/**
         - /api/v1/auth/**
+        - /**
     oauth2:
       resourceserver:
         jwt:
@@ -93,6 +94,7 @@ springdoc:
     tags-sorter: alpha
     url: ${server.path}/v3/api-docs
     config-url: ${server.path}/v3/api-docs/swagger-config
+  server-urls: http://localhost:${server.port},/
 
 management:
   endpoints:

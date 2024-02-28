@@ -1,6 +1,8 @@
 package com.free.swd_392.mapper;
 
-import com.free.swd_392.core.mapper.BaseMapper;
+import com.free.swd_392.core.mapper.CreateModelMapper;
+import com.free.swd_392.core.mapper.DtoMapper;
+import com.free.swd_392.core.mapper.UpdateModelMapper;
 import com.free.swd_392.dto.user.UserDetails;
 import com.free.swd_392.dto.user.UserInfo;
 import com.free.swd_392.dto.user.request.RegisterUserRequest;
@@ -19,7 +21,10 @@ import org.springframework.beans.factory.annotation.Autowired;
         imports = {PhoneUtils.class}
 )
 @Setter(onMethod_ = {@Autowired})
-public abstract class UserMapper implements BaseMapper<UserInfo, UserDetails, UserEntity> {
+public abstract class UserMapper implements
+        DtoMapper<UserInfo, UserDetails, UserEntity>,
+        CreateModelMapper<UserDetails, UserEntity>,
+        UpdateModelMapper<UserDetails, UserEntity> {
 
     @Mapping(target = "id", source = "uid")
     @Mapping(target = "phone", expression = "java(PhoneUtils.removePhoneNumberIdentifier(userRecord.getPhoneNumber()))")
@@ -36,4 +41,10 @@ public abstract class UserMapper implements BaseMapper<UserInfo, UserDetails, Us
     @Mapping(target = "gender")
     @Mapping(target = "birthday")
     public abstract void updateConvertToEntityApp(@MappingTarget UserEntity entity, UserDetails details);
+
+    @Override
+    @Named("convertToInfoMapper")
+    @Mapping(target = "roleKind", source = "role.kind")
+    public abstract UserInfo convertToInfo(UserEntity entity);
+
 }

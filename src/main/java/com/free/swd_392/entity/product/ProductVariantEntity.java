@@ -20,4 +20,12 @@ public class ProductVariantEntity {
     private String name;
     private Integer ordering;
     private Boolean isSoldOut;
+
+    @ToString.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            insertable = false,
+            updatable = false
+    )
+    private ProductConfigEntity config;
 }

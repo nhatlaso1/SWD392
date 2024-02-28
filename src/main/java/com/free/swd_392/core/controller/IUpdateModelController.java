@@ -5,6 +5,7 @@ import com.free.swd_392.core.converter.DetailsConverter;
 import com.free.swd_392.core.converter.IdConverter;
 import com.free.swd_392.core.factory.Factory;
 import com.free.swd_392.core.factory.FactoryExceptionCode;
+import com.free.swd_392.core.mapper.UpdateModelMapper;
 import com.free.swd_392.core.model.BaseResponse;
 import com.free.swd_392.core.model.IBaseData;
 import com.free.swd_392.core.view.View;
@@ -18,11 +19,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @RequestMapping("/")
-public interface IUpdateModelController<I, D extends IBaseData<I>, A, E> extends
+public interface IUpdateModelController<I, D extends IBaseData<I>, U extends IBaseData<I>, A, E> extends
         Factory<A, E>,
         FactoryExceptionCode,
         IdConverter<I, A>,
-        DetailsConverter<I, D, E> {
+        DetailsConverter<I, D, E>,
+        UpdateModelMapper<U, E> {
 
     @PutMapping("update")
     @JsonView(View.Details.class)
@@ -31,31 +33,30 @@ public interface IUpdateModelController<I, D extends IBaseData<I>, A, E> extends
             @JsonView(View.Include.Update.class)
             @RequestBody
             @Valid
-            D request
+            U request
     ) {
-        if (request.getId() == null) {
-            throw new InvalidException(badRequest());
-        }
         return success(aroundUpdate(preUpdate(request)));
     }
 
-    default D preUpdate(D details) {
-        return details;
+    default U preUpdate(U request) {
+        if (request.getId() == null) {
+            throw new InvalidException(badRequest());
+        }
+        return request;
     }
 
-    default D aroundUpdate(D details) {
+    default D aroundUpdate(U request) {
         CrudRepository<E, A> repository = getRepository();
-        E oldEntity = repository.findById(toIdEntity(details.getId()))
+        E oldEntity = repository.findById(toIdEntity(request.getId()))
                 .orElseThrow(() -> new InvalidException(notFound()));
-        updateConvertToEntity(oldEntity, details);
+        updateConvertToEntity(oldEntity, request);
         E entity = repository.save(oldEntity);
+        D details = convertToDetails(entity);
         postUpdate(entity, details);
-        return convertToDetails(entity);
+        return details;
     }
 
     default void postUpdate(E entity, D details) {
         // empty
     }
-
-    void updateConvertToEntity(E entity, D details) throws InvalidException;
 }

@@ -1,4 +1,4 @@
-package com.free.swd_392.dto.product.request;
+package com.free.swd_392.dto.product.request.filter;
 
 import com.free.swd_392.core.model.IFilter;
 import com.free.swd_392.entity.product.ProductCategoryEntity;
@@ -11,6 +11,9 @@ import lombok.Data;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 public class ProductCategoryFilter implements IFilter, Specification<ProductCategoryEntity> {
 
@@ -19,18 +22,18 @@ public class ProductCategoryFilter implements IFilter, Specification<ProductCate
 
     @Override
     public Predicate toPredicate(@NonNull Root<ProductCategoryEntity> root, @NonNull CriteriaQuery<?> query, @NonNull CriteriaBuilder cb) {
-        Predicate[] predicates = new Predicate[2];
+        List<Predicate> predicates = new ArrayList<>();
 
         if (getParentId() != null) {
-            predicates[0] = cb.equal(root.get(ProductCategoryEntity.Fields.parentId), getParentId());
+            predicates.add(cb.equal(root.get(ProductCategoryEntity.Fields.parentId), getParentId()));
         } else {
-            predicates[0] = cb.isNull(root.get(ProductCategoryEntity.Fields.parentId));
+            predicates.add(cb.isNull(root.get(ProductCategoryEntity.Fields.parentId)));
         }
 
         if (getStatus() != null) {
-            predicates[1] = cb.equal(root.get(ProductCategoryEntity.Fields.status), getStatus());
+            predicates.add(cb.equal(root.get(ProductCategoryEntity.Fields.status), getStatus()));
         }
 
-        return cb.and(predicates);
+        return cb.and(predicates.toArray(Predicate[]::new));
     }
 }

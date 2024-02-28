@@ -19,7 +19,6 @@ public class SkuConfigId implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private Long productConfigId;
-    private Long productVariantId;
-    private UUID skuId;
+    private Long configId;
+    private Long variantId;;
 }

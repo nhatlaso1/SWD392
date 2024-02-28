@@ -9,6 +9,7 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -25,22 +26,19 @@ public class ProductConfigEntity {
     private Long id;
     @Column(length = 200)
     private String name;
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ProductConfigChoice choiceKind;
     @Column(columnDefinition = "BOOLEAN DEFAULT false")
     private boolean isRequired = false;
-    @Column(name = "product_id", nullable = false)
-    private Long productId;
 
     @ToString.Exclude
-    @ManyToOne(fetch = FetchType.LAZY, targetEntity = ProductEntity.class, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "product_id",
-            foreignKey = @ForeignKey(name = "fk_product_config_product_id"),
             insertable = false,
             updatable = false
     )
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private ProductEntity product;
 
     @ToString.Exclude

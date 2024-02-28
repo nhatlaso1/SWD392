@@ -5,6 +5,7 @@ import com.free.swd_392.core.converter.DetailsConverter;
 import com.free.swd_392.core.converter.IdConverter;
 import com.free.swd_392.core.factory.Factory;
 import com.free.swd_392.core.factory.FactoryExceptionCode;
+import com.free.swd_392.core.mapper.CreateModelMapper;
 import com.free.swd_392.core.model.BaseResponse;
 import com.free.swd_392.core.model.IBaseData;
 import com.free.swd_392.core.view.View;
@@ -17,11 +18,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @RequestMapping("/")
-public interface ICreateModelController<I, D extends IBaseData<I>, A, E> extends
+public interface ICreateModelController<I, D extends IBaseData<I>, C extends IBaseData<I>, A, E> extends
         Factory<A, E>,
         FactoryExceptionCode,
         IdConverter<I, A>,
-        DetailsConverter<I, D, E> {
+        DetailsConverter<I, D, E>,
+        CreateModelMapper<C, E> {
 
     @PostMapping("create")
     @JsonView({View.Details.class})
@@ -30,32 +32,31 @@ public interface ICreateModelController<I, D extends IBaseData<I>, A, E> extends
             @JsonView(View.Include.Create.class)
             @RequestBody
             @Valid
-            D request
+            C request
     ) {
         return success(aroundCreate(preCreate(request)));
     }
 
-    default D preCreate(D details) {
-        if (details.getId() == null) {
-            return details;
+    default C preCreate(C request) {
+        if (request.getId() == null) {
+            return request;
         }
-        A entityId = toIdEntity(details.getId());
+        A entityId = toIdEntity(request.getId());
         if (getRepository().findById(entityId).isPresent()) {
             throw new InvalidException(conflict());
         }
-        return details;
+        return request;
     }
 
-    default D aroundCreate(D details) {
-        E entity = createConvertToEntity(details);
+    default D aroundCreate(C request) {
+        E entity = createConvertToEntity(request);
         entity = getRepository().save(entity);
+        D details = convertToDetails(entity);
         postCreate(entity, details);
-        return convertToDetails(entity);
+        return details;
     }
 
     default void postCreate(E entity, D details) {
         // empty
     }
-
-    E createConvertToEntity(D details);
 }

@@ -1,6 +1,6 @@
 package com.free.swd_392.entity.order;
 
-import com.free.swd_392.dto.product.ProductConfigDto;
+import com.free.swd_392.dto.product.ProductConfigInfo;
 import com.free.swd_392.entity.product.ProductEntity;
 import com.free.swd_392.shared.constant.TableName;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
@@ -33,7 +33,7 @@ public class OrderItemEntity {
     private Integer quantity;
     @Type(JsonType.class)
     @Column(columnDefinition = "JSON")
-    private List<ProductConfigDto> extraVariant;
+    private List<ProductConfigInfo> extraVariant;
     @Column(length = 200)
     private String note;
     @Column(name = "order_id", updatable = false, nullable = false)

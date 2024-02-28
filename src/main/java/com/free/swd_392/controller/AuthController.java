@@ -66,7 +66,7 @@ public class AuthController extends BaseController {
             );
             user = userRepository.save(user);
             applicationEventPublisher.publishEvent(new UserCreatedEvent(user.getId()));
-            return wrapResponse(userMapper.convertToDetail(user));
+            return wrapResponse(userMapper.convertToDetails(user));
         } catch (FirebaseAuthException e) {
             log.warn("Get user record from Firebase error ", e);
             throw new InvalidException("Get user record from Firebase error", e);

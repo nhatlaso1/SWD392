@@ -6,6 +6,7 @@ import com.free.swd_392.core.factory.FactoryExceptionCode;
 import com.free.swd_392.core.model.BaseResponse;
 import com.free.swd_392.core.model.IBaseData;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -16,5 +17,6 @@ public interface IGetDetailsByContextController<I, D extends IBaseData<I>, A, E>
         DetailsConverter<I, D, E> {
 
     @GetMapping("details/context")
+    @Transactional
     ResponseEntity<BaseResponse<D>> getDetailsByContext();
 }
