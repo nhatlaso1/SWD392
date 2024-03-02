@@ -1,6 +1,7 @@
 package com.free.swd_392.dto.user.request;
 
 import com.free.swd_392.core.model.IFilter;
+import com.free.swd_392.entity.audit.Audit;
 import com.free.swd_392.entity.user.UserAddressEntity;
 import com.free.swd_392.shared.utils.JwtUtils;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -11,8 +12,6 @@ import lombok.Data;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 
-import static com.free.swd_392.entity.audit.Audit.Fields;
-
 @Data
 public class AppUserAddressFilter implements IFilter, Specification<UserAddressEntity> {
 
@@ -21,6 +20,6 @@ public class AppUserAddressFilter implements IFilter, Specification<UserAddressE
         root.fetch(UserAddressEntity.Fields.province);
         root.fetch(UserAddressEntity.Fields.district);
         root.fetch(UserAddressEntity.Fields.ward);
-        return cb.equal(root.get(Fields.createdBy), JwtUtils.getUserId());
+        return cb.equal(root.get(Audit.Fields.createdBy), JwtUtils.getUserId());
     }
 }

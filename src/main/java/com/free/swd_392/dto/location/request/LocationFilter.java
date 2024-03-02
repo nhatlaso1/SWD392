@@ -2,7 +2,6 @@ package com.free.swd_392.dto.location.request;
 
 import com.free.swd_392.core.model.IFilter;
 import com.free.swd_392.entity.location.LocationEntity;
-import com.free.swd_392.entity.location.LocationEntity.Fields;
 import com.free.swd_392.enums.LocationKind;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -30,15 +29,15 @@ public class LocationFilter implements IFilter, Specification<LocationEntity> {
     public Predicate toPredicate(@NonNull Root<LocationEntity> root, @NonNull CriteriaQuery<?> query, @NonNull CriteriaBuilder cb) {
         List<Predicate> predicates = new ArrayList<>();
         if (getName() != null) {
-            predicates.add(cb.isTrue(cb.function(FULL_TEXT_SEARCH, Boolean.class, root.get(Fields.name), cb.literal(getName()))));
+            predicates.add(cb.isTrue(cb.function(FULL_TEXT_SEARCH, Boolean.class, root.get(LocationEntity.Fields.name), cb.literal(getName()))));
         }
         if (getParentId() != null) {
-            predicates.add(cb.equal(root.get(Fields.parentId), getParentId()));
+            predicates.add(cb.equal(root.get(LocationEntity.Fields.parentId), getParentId()));
         } else {
             predicates.add(cb.isNull(root.get("parent")));
         }
         if (getKind() != null) {
-            predicates.add(cb.equal(root.get(Fields.kind), getKind()));
+            predicates.add(cb.equal(root.get(LocationEntity.Fields.kind), getKind()));
         }
         return cb.and(predicates.toArray(Predicate[]::new));
     }
