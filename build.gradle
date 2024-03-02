@@ -54,6 +54,8 @@ ext {
     mapstructVersion = '1.5.5.Final'
     lombokMapstructBindingVersion = '0.2.0'
     commonLang3Version = '3.13.0'
+    commonIOVersion = '2.11.0'
+    minIOVersion = '8.5.8'
 }
 
 dependencies {
@@ -113,7 +115,9 @@ dependencies {
     annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
 
     //Utilities
+    implementation "commons-io:commons-io:$commonIOVersion"
     implementation "org.apache.commons:commons-lang3:$commonLang3Version"
+    implementation "io.minio:minio:$minIOVersion"
 
 }
 

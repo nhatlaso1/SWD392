@@ -82,7 +82,15 @@ spring:
         jwt:
           issuer-uri: https://securetoken.google.com/${spring.firebase.project-name}
           jwk-set-uri: https://www.googleapis.com/robot/v1/metadata/jwk/securetoken@system.gserviceaccount.com
-
+  minio:
+    check-bucket: false
+    url: https://api-minio.ic-fpt.click
+    access-key: WA9jLKOQ7VOLM3J3ObNs
+    secret-key: hbZhS6WvtjYv3TAon2UV0Z4Cvc8wlUrHJrmTJzrp
+    bucket: auction
+    secure: true
+    create-bucket: false
+    pre-signed-upload-duration: 60
 springdoc:
   api-docs:
     path: /v3/api-docs
