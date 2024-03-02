@@ -18,4 +18,6 @@ public class TableName {
     public static final String PAYMENT_WALLET = PREFIX + "payment_wallet";
     public static final String USER = PREFIX + "user";
     public static final String USER_ROLE = PREFIX + "user_role";
+    public static final String LOCATION = PREFIX + "location";
+    public static final String USER_ADDRESS = PREFIX + "user_address";
 }

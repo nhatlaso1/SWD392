@@ -14,4 +14,8 @@ public enum RoleKind {
     public static final String SUPER_ADMIN_VALUE = "SUPER_ADMIN";
     public static final String USER_VALUE = "USER";
     public static final String MERCHANT_VALUE = "MERCHANT";
+
+    public static String concatPrefix(String authority) {
+        return "ROLE_" + authority;
+    }
 }
