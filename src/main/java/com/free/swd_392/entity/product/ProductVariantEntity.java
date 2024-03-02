@@ -3,10 +3,12 @@ package com.free.swd_392.entity.product;
 import com.free.swd_392.shared.constant.TableName;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.Accessors;
 
 @Getter
 @Setter
 @ToString
+@Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity

@@ -5,7 +5,7 @@
     <property name="CONSOLE_LOG_PATTERN"
               value="%highlight([%-5level]):%green([${APP_ENV}]):%yellow([%d{yyyy-MM-dd HH:mm:ss.SSS}])[%t]%cyan([%c{1}]):%line- %m %n"/>
     <property name="LOG_PATTERN"
-              value="[%-5level][${APP_ENV}][%d{yyyy-MM-dd HH:mm:ss.SSS}][%t][%c{1}]:%L:[%.10(%X{sessionId})][%X{path}] - %m%n"/>
+              value="[%-5level][%d{yyyy-MM-dd HH:mm:ss.SSS}][%t][%c{1}]:%L:[%.10(%X{sessionId})][%X{path}] - %m%n"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">

@@ -1,35 +1,36 @@
 package com.free.swd_392.config.security;
 
 import com.free.swd_392.config.security.filter.ApiKeyFilter;
+import com.free.swd_392.config.security.filter.BearerTokenFilter;
 import com.free.swd_392.config.security.properties.ApiKeyProperties;
 import com.free.swd_392.config.security.properties.IgnoreAuthorizationProperties;
 import com.free.swd_392.core.converter.JwtConverter;
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.info.Info;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import io.swagger.v3.oas.annotations.security.SecuritySchemes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static com.free.swd_392.enums.RoleKind.*;
 
 @Configuration(proxyBeanMethods = false)
-@EnableMethodSecurity(jsr250Enabled = true, securedEnabled = true)
 @RequiredArgsConstructor
 @EnableConfigurationProperties({IgnoreAuthorizationProperties.class, ApiKeyProperties.class})
 public class SecurityConfig {
@@ -42,6 +43,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        var jwtAuthProvider = new JwtAuthProvider(jwtDecoder, jwtConverter);
         if (apiKeyProperties != null) {
             for (var apiKey : apiKeyProperties.getApiKey()) {
                 http.addFilterAfter(new ApiKeyFilter(apiKey.getPath(), apiKey.getKey()), LogoutFilter.class);
@@ -53,13 +55,19 @@ public class SecurityConfig {
                         customizer -> customizer
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                 .requestMatchers(ignoreAuthorizationProperties.getIgnoreAuthorization().toArray(String[]::new)).permitAll()
+                                .requestMatchers("/api/v1/app/**").hasRole(USER_VALUE)
+                                .requestMatchers("/api/v1/app/product/**").hasRole(MERCHANT_VALUE)
+                                .requestMatchers("/api/v1/app/product-sku/**").hasRole(MERCHANT_VALUE)
+                                .requestMatchers("/api/v1/system/**").hasRole(CMS_VALUE)
+                                .requestMatchers("/api/v1/system/user/**").hasRole(SUPER_ADMIN_VALUE)
+                                .requestMatchers("/api/v1/system/product-category/**").hasRole(SUPER_ADMIN_VALUE)
                                 .anyRequest().authenticated()
-
                 )
                 .oauth2ResourceServer(oauth2Configurer -> oauth2Configurer
                         .jwt(jwtConfigurer -> jwtConfigurer.jwtAuthenticationConverter(new JwtConverter()))
                 )
-                .authenticationProvider(new JwtAuthProvider(jwtDecoder, jwtConverter))
+                .addFilterAfter(new BearerTokenFilter(jwtAuthProvider), LogoutFilter.class)
+                .authenticationProvider(jwtAuthProvider)
                 .exceptionHandling(exCustomizer -> exCustomizer.authenticationEntryPoint(restAuthenticationEntryPoint))
                 .logout(logoutConfigurer -> logoutConfigurer
                         .logoutUrl("/api/v1/auth/logout")
@@ -72,6 +80,21 @@ public class SecurityConfig {
 
     }
 
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+        Map<String, List<String>> roleHierarchyMapping = new HashMap<>();
+        roleHierarchyMapping.put(MERCHANT_VALUE, List.of(USER_VALUE));
+        roleHierarchyMapping.put(SUPER_ADMIN_VALUE, List.of(CMS_VALUE));
+        return roleHierarchyFromMap(roleHierarchyMapping);
+    }
+
+    @Bean
+    public DefaultWebSecurityExpressionHandler customWebSecurityExpressionHandler(RoleHierarchy roleHierarchy) {
+        DefaultWebSecurityExpressionHandler expressionHandler = new DefaultWebSecurityExpressionHandler();
+        expressionHandler.setRoleHierarchy(roleHierarchy);
+        return expressionHandler;
+    }
+
     private void configCors(CorsConfigurer<HttpSecurity> cors) {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowCredentials(true);
@@ -81,5 +104,23 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
         cors.configurationSource(source);
+    }
+
+    private static RoleHierarchy roleHierarchyFromMap(Map<String, List<String>> roleHierarchyMapping) {
+
+        StringWriter roleHierarchyDescriptionBuffer = new StringWriter();
+        PrintWriter roleHierarchyDescriptionWriter = new PrintWriter(roleHierarchyDescriptionBuffer);
+
+        for (Map.Entry<String, List<String>> entry : roleHierarchyMapping.entrySet()) {
+            String currentRole = entry.getKey();
+            List<String> impliedRoles = entry.getValue();
+            for (String impliedRole : impliedRoles) {
+                String roleMapping = currentRole + " > " + impliedRole;
+                roleHierarchyDescriptionWriter.println(roleMapping);
+            }
+        }
+        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+        roleHierarchy.setHierarchy(roleHierarchyDescriptionBuffer.toString());
+        return roleHierarchy;
     }
 }

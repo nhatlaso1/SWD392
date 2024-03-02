@@ -1,4 +1,4 @@
-package com.free.swd_392.mapper.system;
+package com.free.swd_392.mapper.app;
 
 import com.free.swd_392.core.mapper.CreateModelMapper;
 import com.free.swd_392.core.mapper.DtoMapper;
@@ -14,9 +14,9 @@ import java.util.List;
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         injectionStrategy = InjectionStrategy.CONSTRUCTOR,
-        uses = {SystemProductVariantMapper.class}
+        uses = {AppProductVariantMapper.class}
 )
-public abstract class SystemProductConfigMapper implements
+public abstract class AppProductConfigMapper implements
         DtoMapper<ProductConfigInfo, ProductConfigInfo, ProductConfigEntity>,
         CreateModelMapper<ProductConfigInfo, ProductConfigEntity>,
         UpdateModelMapper<ProductConfigInfo, ProductConfigEntity> {

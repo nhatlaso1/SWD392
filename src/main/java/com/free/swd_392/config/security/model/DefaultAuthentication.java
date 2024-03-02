@@ -82,6 +82,14 @@ public class DefaultAuthentication extends AbstractAuthenticationToken implement
     }
 
     @Override
+    public Collection<GrantedAuthority> getAuthorities() {
+        if (principal != null) {
+            return (Collection<GrantedAuthority>) principal.getAuthorities();
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
 
@@ -99,5 +107,18 @@ public class DefaultAuthentication extends AbstractAuthenticationToken implement
                 .appendSuper(super.hashCode())
                 .append(getPrincipal())
                 .append(getToken()).toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName()).append(" [");
+        sb.append("Principal=").append(getPrincipal()).append(", ");
+        sb.append("Credentials=[PROTECTED], ");
+        sb.append("Authenticated=").append(isAuthenticated()).append(", ");
+        sb.append("Details=").append(getDetails()).append(", ");
+        sb.append("Granted Authorities=").append(getAuthorities());
+        sb.append("]");
+        return sb.toString();
     }
 }

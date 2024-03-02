@@ -5,6 +5,7 @@ import com.free.swd_392.exception.InvalidException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
@@ -73,9 +74,10 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse handleAccessDeniedException(AccessDeniedException e) {
+        var message = StringUtils.isNotBlank(e.getMessage()) ? e.getMessage() : "Access denied";
         return ErrorResponse.builder()
                 .success(false)
-                .message("Access denied")
+                .message(message)
                 .build();
     }
 

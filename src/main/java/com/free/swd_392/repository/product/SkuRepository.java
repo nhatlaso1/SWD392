@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -13,4 +14,6 @@ import java.util.UUID;
 public interface SkuRepository extends
         JpaRepository<SkuEntity, UUID>,
         JpaSpecificationExecutor<SkuEntity> {
+
+    List<SkuEntity> getAllByProductId(Long productId);
 }

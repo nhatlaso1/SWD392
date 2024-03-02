@@ -12,6 +12,7 @@ import com.free.swd_392.core.view.View;
 import com.free.swd_392.exception.InvalidException;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,15 +49,23 @@ public interface ICreateModelController<I, D extends IBaseData<I>, C extends IBa
         return request;
     }
 
+    @Nullable
     default D aroundCreate(C request) {
         E entity = createConvertToEntity(request);
         entity = getRepository().save(entity);
-        D details = convertToDetails(entity);
-        postCreate(entity, details);
-        return details;
+        D details = null;
+        if (returnResultAfterCreate()) {
+            details = convertToDetails(entity);
+        }
+        postCreate(entity, request, details);
+        return null;
     }
 
-    default void postCreate(E entity, D details) {
+    default void postCreate(E entity, C request, @Nullable D details) {
         // empty
+    }
+
+    default boolean returnResultAfterCreate() {
+        return false;
     }
 }

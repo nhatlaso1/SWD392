@@ -59,7 +59,7 @@ public class AuthController extends BaseController {
                     Map.of("resource_access", Map.of(
                                     "auction", Map.of(
                                             "roles",
-                                            List.of("ROLE_" + role.getKind().name())
+                                            List.of(role.getKind().name())
                                     )
                             )
                     )

@@ -1,4 +1,4 @@
-package com.free.swd_392.mapper.system;
+package com.free.swd_392.mapper.app;
 
 import com.free.swd_392.core.mapper.CreateModelMapper;
 import com.free.swd_392.core.mapper.DtoMapper;
@@ -18,7 +18,7 @@ import java.util.List;
         injectionStrategy = InjectionStrategy.CONSTRUCTOR
 )
 @Setter(onMethod_ = {@Autowired})
-public abstract class SystemProductVariantMapper implements
+public abstract class AppProductVariantMapper implements
         DtoMapper<ProductVariantInfo, ProductVariantInfo, ProductVariantEntity>,
         CreateModelMapper<ProductVariantInfo, ProductVariantEntity>,
         UpdateModelMapper<ProductVariantInfo, ProductVariantEntity> {

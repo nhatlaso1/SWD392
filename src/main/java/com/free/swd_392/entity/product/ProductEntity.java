@@ -58,4 +58,8 @@ public class ProductEntity extends Audit<String> {
     @Fetch(FetchMode.SUBSELECT)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<ProductConfigEntity> productConfigs;
+
+    @OneToMany(mappedBy = "product")
+    @Fetch(FetchMode.SUBSELECT)
+    private List<SkuEntity> skus;
 }

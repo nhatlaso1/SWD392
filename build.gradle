@@ -94,7 +94,7 @@ dependencies {
      * Utils
      */
     // Firebase
-    implementation ("com.google.firebase:firebase-admin:$firebaseVersion") {
+    implementation("com.google.firebase:firebase-admin:$firebaseVersion") {
         exclude group: "commons-logging", module: "commons-logging"
     }
 

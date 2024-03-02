@@ -6,7 +6,10 @@ import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.UUID;
+
+import static jakarta.persistence.CascadeType.MERGE;
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.FetchType.LAZY;
 
 @Getter
 @Setter
@@ -15,47 +18,39 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity
 @Table(name = TableName.PRODUCT_SKU_CONFIG)
-@IdClass(SkuConfigId.class)
 public class SkuConfigEntity implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 3L;
 
     @Id
-    @Column(name = "product_config_id", nullable = false)
-    private Long configId;
-    @Id
-    @Column(name = "product_variant_id", nullable = false)
-    private Long variantId;
-    @Column(name = "sku_id")
-    private UUID skuId;
+    @EmbeddedId
+    private SkuConfigId id;
 
     @ToString.Exclude
-    @MapsId("configId")
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "product_config_id",
-            foreignKey = @ForeignKey(name = "fk_sku_config_product_config_id"),
-            insertable = false,
-            updatable = false
-    )
-    private ProductConfigEntity pConfig;
-    @ToString.Exclude
     @MapsId("variantId")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY, cascade = {MERGE, PERSIST})
     @JoinColumn(
-            name = "product_variant_id",
-            foreignKey = @ForeignKey(name = "fk_sku_config_product_variant_id"),
+            name = "variant_id",
+            foreignKey = @ForeignKey(name = "fk_sku_config_variant_id"),
             insertable = false,
             updatable = false
     )
     private ProductVariantEntity variant;
     @ToString.Exclude
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "sku_id",
+    @MapsId("skuId")
+    @ManyToOne(fetch = LAZY, cascade = {MERGE, PERSIST})
+    @JoinColumn(name = "sku_id",
             insertable = false,
-            updatable = false
-    )
+            foreignKey = @ForeignKey(name = "fk_sku_config_sku_id"),
+            updatable = false)
     private SkuEntity sku;
+
+    public SkuConfigEntity(SkuEntity sku, ProductVariantEntity variant) {
+        setSku(sku);
+        setVariant(variant);
+        if (sku != null && sku.getId() != null && variant != null && variant.getId() != null) {
+            setId(new SkuConfigId(sku.getId(), variant.getId()));
+        }
+    }
 }
