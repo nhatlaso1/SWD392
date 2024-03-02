@@ -35,7 +35,6 @@ public class JwtAuthProvider implements AuthenticationProvider {
         if (token == null) {
             throw new InvalidException("Invalid Token");
         }
-        token.setDetails(bearer.getDetails());
         log.debug("Authenticated token");
         return token;
     }

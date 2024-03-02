@@ -30,7 +30,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,7 +41,6 @@ import java.util.Map;
 
 @Slf4j
 @Tag(name = "System User Controller")
-@Transactional
 @RestController
 @RequestMapping("/api/v1/system/user")
 @RequiredArgsConstructor
@@ -85,7 +84,7 @@ public class SystemUserController extends BaseController implements
                     Map.of("resource_access", Map.of(
                                     "auction", Map.of(
                                             "roles",
-                                            List.of("ROLE_" + RoleKind.SUPER_ADMIN.name())
+                                            List.of(RoleKind.SUPER_ADMIN_VALUE)
                                     )
                             )
                     )
@@ -131,7 +130,7 @@ public class SystemUserController extends BaseController implements
                     Map.of("resource_access", Map.of(
                                     "auction", Map.of(
                                             "roles",
-                                            List.of("ROLE_" + roleEntity.getKind().name())
+                                            List.of(roleEntity.getKind().name())
                                     )
                             )
                     )
@@ -156,7 +155,8 @@ public class SystemUserController extends BaseController implements
     }
 
     @Override
-    public void postCreate(UserEntity entity, UserDetails details) {
+    public void postCreate(UserEntity entity, UserDetails request, UserDetails details) {
+        Assert.notNull(details, "details cannot be null");
         applicationEventPublisher.publishEvent(
                 EmailModel.builder()
                         .to(new String[]{entity.getEmail()})

@@ -1,4 +1,4 @@
-package com.free.swd_392.mapper.system;
+package com.free.swd_392.mapper.app;
 
 import com.free.swd_392.core.mapper.CreateModelMapper;
 import com.free.swd_392.core.mapper.DtoMapper;
@@ -7,33 +7,26 @@ import com.free.swd_392.dto.product.SkuInfo;
 import com.free.swd_392.dto.product.request.CreateSkuRequest;
 import com.free.swd_392.dto.product.request.UpdateSkuRequest;
 import com.free.swd_392.entity.product.SkuEntity;
-import org.checkerframework.checker.units.qual.N;
 import org.mapstruct.*;
 
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING,
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-        injectionStrategy = InjectionStrategy.CONSTRUCTOR,
-        uses = {SystemSkuConfigMapper.class}
+        injectionStrategy = InjectionStrategy.CONSTRUCTOR
 )
-public abstract class SystemSkuMapper implements
+public abstract class AppSkuMapper implements
         DtoMapper<SkuInfo, SkuInfo, SkuEntity>,
         CreateModelMapper<CreateSkuRequest, SkuEntity>,
         UpdateModelMapper<UpdateSkuRequest, SkuEntity> {
 
     @Override
     @Named("createConvertToEntityMapper")
-    @Mapping(target = "configs", source = "configs", qualifiedByName = "createConvertToEntityList")
+    @Mapping(target = "variantIds", source = "variantIds", ignore = true)
     public abstract SkuEntity createConvertToEntity(CreateSkuRequest details);
 
     @Override
     @Named("updateConvertToEntityListMapper")
-    @Mapping(target = "configs", source = "configs", qualifiedByName = "updateConvertToEntityListMapper")
+    @Mapping(target = "variantIds", source = "variantIds", ignore = true)
     public abstract void updateConvertToEntity(@MappingTarget SkuEntity entity, UpdateSkuRequest details);
-
-    @Override
-    @Named("convertToInfoMapper")
-    @Mapping(target = "configs", source = "configs", qualifiedByName = "convertToInfoListMapper")
-    public abstract SkuInfo convertToInfo(SkuEntity entity);
 }

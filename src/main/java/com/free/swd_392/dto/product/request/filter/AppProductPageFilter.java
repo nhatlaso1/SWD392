@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class SystemProductPageFilter implements IPageFilter, Specification<ProductEntity> {
+public class AppProductPageFilter implements IPageFilter, Specification<ProductEntity> {
 
     private Pageable pageable;
     private String name;

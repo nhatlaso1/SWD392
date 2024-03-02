@@ -13,6 +13,7 @@ import com.free.swd_392.exception.InvalidException;
 import jakarta.validation.Valid;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,18 +46,26 @@ public interface IUpdateModelController<I, D extends IBaseData<I>, U extends IBa
         return request;
     }
 
+    @Nullable
     default D aroundUpdate(U request) {
         CrudRepository<E, A> repository = getRepository();
         E oldEntity = repository.findById(toIdEntity(request.getId()))
                 .orElseThrow(() -> new InvalidException(notFound()));
         updateConvertToEntity(oldEntity, request);
         E entity = repository.save(oldEntity);
-        D details = convertToDetails(entity);
-        postUpdate(entity, details);
-        return details;
+        D details = null;
+        if (returnResultAfterUpdate()) {
+            details = convertToDetails(entity);
+        }
+        postUpdate(entity, request, details);
+        return null;
     }
 
-    default void postUpdate(E entity, D details) {
+    default void postUpdate(E entity, U request, @Nullable D details) {
         // empty
+    }
+
+    default boolean returnResultAfterUpdate() {
+        return false;
     }
 }

@@ -9,4 +9,5 @@ public class ProductDetails extends ProductInfo {
 
     private String description;
     private List<ProductConfigInfo> productConfigs;
+    private List<SkuInfo> skus;
 }

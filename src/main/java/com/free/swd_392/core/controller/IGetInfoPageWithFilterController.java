@@ -6,7 +6,6 @@ import com.free.swd_392.core.converter.ListEntityToListInfoConverter;
 import com.free.swd_392.core.factory.Factory;
 import com.free.swd_392.core.factory.FactoryExceptionCode;
 import com.free.swd_392.core.model.BasePagingResponse;
-import com.free.swd_392.core.model.BaseResponse;
 import com.free.swd_392.core.model.IBaseData;
 import com.free.swd_392.core.model.IPageFilter;
 import com.free.swd_392.core.view.View;
@@ -34,7 +33,7 @@ public interface IGetInfoPageWithFilterController<I, T extends IBaseData<I>, A, 
     @PageableAsQueryParam
     @JsonView(View.Info.class)
     @Transactional
-    default ResponseEntity<BaseResponse<BasePagingResponse<T>>> getInfoPageWithFilter(
+    default ResponseEntity<BasePagingResponse<T>> getInfoPageWithFilter(
             @ParameterObject @Valid F filter,
             @ParameterObject Pageable pageable
     ) {

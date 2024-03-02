@@ -1,6 +1,5 @@
 package com.free.swd_392.dto.product.request;
 
-import com.free.swd_392.core.model.IBaseData;
 import com.free.swd_392.core.model.ICreateData;
 import com.free.swd_392.dto.product.ProductConfigInfo;
 import com.free.swd_392.enums.ProductStatus;

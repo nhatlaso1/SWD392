@@ -1,5 +1,6 @@
 package com.free.swd_392.core.factory;
 
+import com.free.swd_392.core.model.BasePagingResponse;
 import com.free.swd_392.core.model.BaseResponse;
 import com.free.swd_392.exception.InvalidException;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,6 +23,10 @@ public interface Factory<A, E> {
                 .data(data)
                 .build()
         );
+    }
+
+    default <D> ResponseEntity<BasePagingResponse<D>> success(BasePagingResponse<D> data) {
+        return ResponseEntity.ok(data);
     }
 
     default E findById(A id, String errorMessage) throws InvalidException {

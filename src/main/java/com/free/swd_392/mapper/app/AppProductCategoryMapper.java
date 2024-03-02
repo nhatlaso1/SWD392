@@ -5,7 +5,6 @@ import com.free.swd_392.dto.product.ProductCategoryInfo;
 import com.free.swd_392.entity.product.ProductCategoryEntity;
 import com.free.swd_392.shared.utils.PhoneUtils;
 import lombok.Setter;
-import org.checkerframework.checker.units.qual.N;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 

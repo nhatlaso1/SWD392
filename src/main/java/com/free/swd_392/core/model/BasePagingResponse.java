@@ -1,16 +1,17 @@
 package com.free.swd_392.core.model;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.function.Function;
 
 @Getter
+@JsonPropertyOrder({"success", "pageNumber", "pageSize", "totalElements", "totalPages", "data"})
 @EqualsAndHashCode(callSuper = true)
-public class BasePagingResponse<T extends Serializable> extends BaseResponse<List<T>> {
+public class BasePagingResponse<T> extends BaseResponse<List<T>> {
 
     private final int pageNumber;
     private final int pageSize;
@@ -19,6 +20,7 @@ public class BasePagingResponse<T extends Serializable> extends BaseResponse<Lis
 
     public BasePagingResponse(List<T> data, int pageNumber, int pageSize, long totalElements, long totalPages) {
         setData(data);
+        setSuccess(true);
         this.pageNumber = pageNumber;
         this.pageSize = pageSize;
         this.totalElements = totalElements;

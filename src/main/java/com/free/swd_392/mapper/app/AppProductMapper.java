@@ -1,4 +1,4 @@
-package com.free.swd_392.mapper.system;
+package com.free.swd_392.mapper.app;
 
 import com.free.swd_392.core.mapper.CreateModelMapper;
 import com.free.swd_392.core.mapper.DtoMapper;
@@ -8,16 +8,19 @@ import com.free.swd_392.dto.product.ProductInfo;
 import com.free.swd_392.dto.product.request.CreateProductRequest;
 import com.free.swd_392.dto.product.request.UpdateProductRequest;
 import com.free.swd_392.entity.product.ProductEntity;
+import lombok.Setter;
 import org.mapstruct.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING,
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         injectionStrategy = InjectionStrategy.CONSTRUCTOR,
-        uses = {SystemProductConfigMapper.class}
+        uses = {AppProductConfigMapper.class, AppSkuMapper.class}
 )
-public abstract class SystemProductMapper implements
+@Setter(onMethod_ = {@Autowired})
+public abstract class AppProductMapper implements
         DtoMapper<ProductInfo, ProductDetails, ProductEntity>,
         CreateModelMapper<CreateProductRequest, ProductEntity>,
         UpdateModelMapper<UpdateProductRequest, ProductEntity> {
@@ -41,5 +44,6 @@ public abstract class SystemProductMapper implements
     @InheritConfiguration(name = "convertToInfo")
     @Named("convertToDetailMapper")
     @Mapping(target = "productConfigs", source = "productConfigs", qualifiedByName = "convertToInfoListMapper")
+    @Mapping(target = "skus", source = "skus", qualifiedByName = "convertToInfoListMapper")
     public abstract ProductDetails convertToDetails(ProductEntity entity);
 }
