@@ -2,6 +2,7 @@ package com.free.swd_392.entity.audit;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldNameConstants;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SourceType;
@@ -21,6 +22,7 @@ import static org.springframework.data.jpa.domain.AbstractAuditable_.*;
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
 @MappedSuperclass
+@FieldNameConstants
 @EntityListeners(AuditingEntityListener.class)
 public abstract class Audit<I extends Serializable> implements Serializable {
 

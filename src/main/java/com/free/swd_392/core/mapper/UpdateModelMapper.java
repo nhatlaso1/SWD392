@@ -15,15 +15,15 @@ import java.util.function.Supplier;
 public interface UpdateModelMapper<D extends IBaseData<?>, E> {
 
     @Named("updateConvertToEntityMapper")
-    void updateConvertToEntity(@MappingTarget E entity, D details);
+    void updateConvertToEntity(@MappingTarget E entity, D request);
 
     @Named("updateConvertToEntityListMapper")
     default <A> void updateConvertToEntityList(@MappingTarget List<E> entities,
-                                               List<D> details,
+                                               List<D> request,
                                                Function<E, A> getEntityId,
                                                Function<D, A> getDetailsId,
                                                Supplier<E> entityConstructor) {
-        if (CollectionUtils.isEmpty(details)) {
+        if (CollectionUtils.isEmpty(request)) {
             return;
         }
         if (entities == null) {
@@ -31,7 +31,7 @@ public interface UpdateModelMapper<D extends IBaseData<?>, E> {
         }
         var oldDetailsMap = new HashMap<A, D>();
         var newDetailsList = new LinkedList<D>();
-        for (var detail : details) {
+        for (var detail : request) {
             var detailId = getDetailsId.apply(detail);
             if (detailId != null) {
                 oldDetailsMap.put(detailId, detail);
