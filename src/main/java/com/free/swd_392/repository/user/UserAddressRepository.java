@@ -15,14 +15,18 @@ public interface UserAddressRepository extends
         JpaRepository<UserAddressEntity, Long>,
         JpaSpecificationExecutor<UserAddressEntity> {
 
+    int countByCreatedBy(String createdBy);
+
+    boolean existsByIdAndIsDefaultIsTrue(Long id);
+
     @Modifying
     @Query(value = """
-                UPDATE auction_swd_392.auction_user_address uae
+                UPDATE auction_user_address uae
                 SET is_default = CASE
                                     WHEN id = :addressId THEN true
                                     ELSE false
                                 END
-                WHERE user_id = :userId
+                WHERE created_by = :userId
             """, nativeQuery = true)
-    void updateUserAddressDefault(@Param("userId") Long userId, @Param("addressId") Long addressId);
+    void updateUserAddressDefault(@Param("userId") String userId, @Param("addressId") Long addressId);
 }

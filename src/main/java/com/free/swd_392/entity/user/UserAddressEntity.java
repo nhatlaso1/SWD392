@@ -1,11 +1,14 @@
 package com.free.swd_392.entity.user;
 
+import com.free.swd_392.entity.audit.Audit;
 import com.free.swd_392.entity.location.LocationEntity;
 import com.free.swd_392.shared.constant.TableName;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldNameConstants;
+
+import static org.springframework.data.jpa.domain.AbstractAuditable_.CREATED_BY;
 
 @Entity
 @Getter
@@ -16,7 +19,7 @@ import lombok.experimental.FieldNameConstants;
 @ToString
 @FieldNameConstants
 @Table(name = TableName.USER_ADDRESS)
-public class UserAddressEntity {
+public class UserAddressEntity extends Audit<String> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,8 +34,6 @@ public class UserAddressEntity {
     private boolean isDefault = false;
     @Column(length = 200)
     private String note;
-    @Column(name = "user_id", insertable = false, updatable = false)
-    private String userId;
     @Column(name = "province_id", nullable = false)
     private Long provinceId;
     @Column(name = "district_id", nullable = false)
@@ -43,7 +44,7 @@ public class UserAddressEntity {
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = UserEntity.class)
     @JoinColumn(
-            name = "user_id",
+            name = CREATED_BY,
             foreignKey = @ForeignKey(name = "fk_user_address_user_id"),
             insertable = false,
             updatable = false

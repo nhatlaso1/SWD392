@@ -4,6 +4,7 @@ import com.free.swd_392.core.converter.IdConverter;
 import com.free.swd_392.core.factory.Factory;
 import com.free.swd_392.core.factory.FactoryExceptionCode;
 import com.free.swd_392.core.model.BaseResponse;
+import com.free.swd_392.core.model.SuccessResponse;
 import com.free.swd_392.exception.InvalidException;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public interface IDeleteModelByIdController<I, A, E> extends
 
     @DeleteMapping("{id}/delete")
     @Transactional
-    default ResponseEntity<BaseResponse<Object>> deleteModelById(@PathVariable("id") @NotNull I id) {
+    default ResponseEntity<SuccessResponse> deleteModelById(@PathVariable("id") @NotNull I id) {
         preDelete(id);
         aroundDelete(id);
         postDelete(id);
