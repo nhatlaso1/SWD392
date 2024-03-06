@@ -6,15 +6,16 @@ import com.free.swd_392.core.mapper.UpdateModelMapper;
 import com.free.swd_392.dto.user.UserAddressInfo;
 import com.free.swd_392.dto.user.request.CreateUserAddressRequest;
 import com.free.swd_392.dto.user.request.UpdateUserAddressRequest;
-import com.free.swd_392.entity.location.LocationEntity;
 import com.free.swd_392.entity.user.UserAddressEntity;
+import com.free.swd_392.mapper.LocationMapper;
 import org.mapstruct.*;
 
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING,
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-        injectionStrategy = InjectionStrategy.CONSTRUCTOR
+        injectionStrategy = InjectionStrategy.CONSTRUCTOR,
+        uses = {LocationMapper.class}
 )
 public abstract class AppUserAddressMapper implements
         DtoMapper<UserAddressInfo, UserAddressInfo, UserAddressEntity>,
@@ -27,12 +28,4 @@ public abstract class AppUserAddressMapper implements
     @Mapping(target = "districtName", source = "district", qualifiedByName = "toLocationName")
     @Mapping(target = "wardName", source = "ward", qualifiedByName = "toLocationName")
     public abstract UserAddressInfo convertToInfo(UserAddressEntity entity);
-
-    @Named("toLocationName")
-    protected String toLocationName(LocationEntity location) {
-        if (location == null) {
-            return null;
-        }
-        return location.getName();
-    }
 }

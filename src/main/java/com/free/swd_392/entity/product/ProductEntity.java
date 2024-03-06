@@ -1,6 +1,7 @@
 package com.free.swd_392.entity.product;
 
 import com.free.swd_392.entity.audit.Audit;
+import com.free.swd_392.entity.merchant.MerchantEntity;
 import com.free.swd_392.enums.ProductStatus;
 import com.free.swd_392.shared.constant.TableName;
 import jakarta.persistence.*;
@@ -39,6 +40,8 @@ public class ProductEntity extends Audit<String> {
     private boolean isSoldOut = false;
     @Column(name = "category_id", nullable = false)
     private Long categoryId;
+    @Column(name = "merchant_id", nullable = false)
+    private Long merchantId;
 
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = ProductCategoryEntity.class, optional = false)
     @JoinColumn(
@@ -49,6 +52,16 @@ public class ProductEntity extends Audit<String> {
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
     private ProductCategoryEntity category;
+
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = MerchantEntity.class, optional = false)
+    @JoinColumn(
+            name = "merchant_id",
+            foreignKey = @ForeignKey(name = "fk_product_merchant_id"),
+            insertable = false,
+            updatable = false
+    )
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private MerchantEntity merchant;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, targetEntity = ProductConfigEntity.class)
     @JoinColumn(

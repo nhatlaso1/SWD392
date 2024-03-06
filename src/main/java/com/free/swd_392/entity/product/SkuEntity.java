@@ -82,4 +82,13 @@ public class SkuEntity extends Audit<String> {
                 .boxed()
                 .toList();
     }
+
+    public List<ProductVariantEntity> getVariants() {
+        if (CollectionUtils.isEmpty(configs)) {
+            return Collections.emptyList();
+        }
+        return configs.stream()
+                .map(SkuConfigEntity::getVariant)
+                .toList();
+    }
 }

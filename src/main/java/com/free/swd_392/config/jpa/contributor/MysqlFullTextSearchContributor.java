@@ -1,6 +1,5 @@
 package com.free.swd_392.config.jpa.contributor;
 
-import com.free.swd_392.shared.constant.SqlFunctionName;
 import org.hibernate.boot.model.FunctionContributions;
 import org.hibernate.boot.model.FunctionContributor;
 import org.hibernate.dialect.function.StandardSQLFunction;

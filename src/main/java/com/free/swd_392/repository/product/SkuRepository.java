@@ -16,4 +16,6 @@ public interface SkuRepository extends
         JpaSpecificationExecutor<SkuEntity> {
 
     List<SkuEntity> getAllByProductId(Long productId);
+
+    boolean existsByIdAndProductMerchantId(UUID id, Long merchantId);
 }

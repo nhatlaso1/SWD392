@@ -1,7 +1,9 @@
 package com.free.swd_392.dto.product.request.filter;
 
 import com.free.swd_392.core.model.IPageFilter;
+import com.free.swd_392.entity.audit.Audit;
 import com.free.swd_392.entity.product.ProductEntity;
+import com.free.swd_392.shared.utils.JwtUtils;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -14,6 +16,7 @@ import org.springframework.lang.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 public class AppProductPageFilter implements IPageFilter, Specification<ProductEntity> {
@@ -34,6 +37,7 @@ public class AppProductPageFilter implements IPageFilter, Specification<ProductE
             predicates.add(cb.equal(root.get(ProductEntity.Fields.categoryId), categoryId));
         }
 
+        predicates.add(cb.equal(root.get(Audit.Fields.createdBy), Objects.requireNonNullElse(JwtUtils.getUserId(), "")));
         root.fetch(ProductEntity.Fields.category);
 
         return cb.and(predicates.toArray(Predicate[]::new));
