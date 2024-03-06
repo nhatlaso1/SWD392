@@ -9,6 +9,7 @@ import java.io.Serializable;
 
 import static jakarta.persistence.CascadeType.MERGE;
 import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.FetchType.EAGER;
 import static jakarta.persistence.FetchType.LAZY;
 
 @Getter
@@ -29,7 +30,7 @@ public class SkuConfigEntity implements Serializable {
 
     @ToString.Exclude
     @MapsId("variantId")
-    @ManyToOne(fetch = LAZY, cascade = {MERGE, PERSIST})
+    @ManyToOne(fetch = EAGER, cascade = {MERGE, PERSIST})
     @JoinColumn(
             name = "variant_id",
             foreignKey = @ForeignKey(name = "fk_sku_config_variant_id"),

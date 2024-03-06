@@ -14,5 +14,5 @@ public class SkuInfo extends AuditInfo<UUID> {
     private BigDecimal price;
     private Integer quantity;
     private String image;
-    private List<Long> variantIds;
+    private List<ProductVariantInfo> variants;
 }

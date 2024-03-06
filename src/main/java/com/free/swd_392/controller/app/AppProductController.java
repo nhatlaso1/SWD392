@@ -14,7 +14,7 @@ import com.free.swd_392.exception.InvalidException;
 import com.free.swd_392.mapper.app.AppProductMapper;
 import com.free.swd_392.repository.product.ProductCategoryRepository;
 import com.free.swd_392.repository.product.ProductRepository;
-import com.free.swd_392.service.PermissionService;
+import com.free.swd_392.shared.utils.JwtUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -46,7 +46,6 @@ public class AppProductController extends BaseController implements
     private final ProductRepository repository;
     private final ProductCategoryRepository productCategoryRepository;
     private final AppProductMapper appProductMapper;
-    private final PermissionService permissionService;
 
     @Transactional
     @GetMapping("/public/info/page/filter")
@@ -68,19 +67,29 @@ public class AppProductController extends BaseController implements
     }
 
     @Override
-    public void preDelete(Long id) {
-        if (!permissionService.isOwner(id, repository)) {
-            throw new AccessDeniedException("");
+    public UpdateProductRequest preUpdate(UpdateProductRequest request) {
+        if (isProductOwner(request.getId())) {
+            return request;
         }
-        IDeleteModelByIdController.super.preDelete(id);
+        throw new AccessDeniedException("");
+    }
+
+    @Override
+    public void preDelete(Long id) {
+        if (isProductOwner(id)) {
+            IDeleteModelByIdController.super.preDelete(id);
+            return;
+        }
+        throw new AccessDeniedException("");
     }
 
     @Override
     public void preGetDetails(Long id) {
-        if (!permissionService.isOwner(id, repository)) {
-            throw new AccessDeniedException("");
+        if (isProductOwner(id)) {
+            IGetDetailsController.super.preGetDetails(id);
+            return;
         }
-        IGetDetailsController.super.preGetDetails(id);
+        throw new AccessDeniedException("");
     }
 
     @Override
@@ -90,9 +99,6 @@ public class AppProductController extends BaseController implements
 
     @Override
     public void updateConvertToEntity(ProductEntity entity, UpdateProductRequest request) throws InvalidException {
-        if (!permissionService.isOwner(entity)) {
-            throw new AccessDeniedException("");
-        }
         appProductMapper.updateConvertToEntity(entity, request);
     }
 
@@ -114,5 +120,9 @@ public class AppProductController extends BaseController implements
     @Override
     public String notFound() {
         return "Product not found";
+    }
+
+    private boolean isProductOwner(Long id) {
+        return repository.existsByIdAndMerchantId(id, JwtUtils.getMerchantId());
     }
 }

@@ -20,4 +20,5 @@ public class TableName {
     public static final String USER_ROLE = PREFIX + "user_role";
     public static final String LOCATION = PREFIX + "location";
     public static final String USER_ADDRESS = PREFIX + "user_address";
+    public static final String MERCHANT = PREFIX + "merchant";
 }

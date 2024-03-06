@@ -19,11 +19,13 @@ import com.free.swd_392.mapper.app.AppSkuMapper;
 import com.free.swd_392.repository.product.ProductRepository;
 import com.free.swd_392.repository.product.ProductVariantRepository;
 import com.free.swd_392.repository.product.SkuRepository;
-import com.free.swd_392.service.PermissionService;
+import com.free.swd_392.shared.utils.JwtUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.CollectionUtils;
@@ -49,7 +51,6 @@ public class AppSkuController extends BaseController implements
     private final ProductRepository productRepository;
     private final ProductVariantRepository productVariantRepository;
     private final AppSkuMapper appSkuMapper;
-    private final PermissionService permissionService;
 
     @Override
     public CreateSkuRequest preCreate(CreateSkuRequest request) {
@@ -58,7 +59,7 @@ public class AppSkuController extends BaseController implements
         if (CollectionUtils.isEmpty(productEntity.getProductConfigs())) {
             return request;
         }
-        validateProductConfig(productEntity, request.getVariantIds());
+        validateProductConfig(productEntity, request.getVariantIds(), null);
         return request;
     }
 
@@ -73,13 +74,13 @@ public class AppSkuController extends BaseController implements
         var skuEntity = findById(request.getId(), notFound());
         var productEntity = productRepository.findByIdFetchConfigVariant(skuEntity.getProductId())
                 .orElseThrow(() -> new InvalidException("Product id not found"));
-        if (!permissionService.isOwner(productEntity)) {
+        if (!Objects.equals(productEntity.getMerchantId(), JwtUtils.getMerchantId())) {
             throw new AccessDeniedException("");
         }
         if (CollectionUtils.isEmpty(productEntity.getProductConfigs())) {
             return request;
         }
-        validateProductConfig(productEntity, request.getVariantIds());
+        validateProductConfig(productEntity, request.getVariantIds(), request.getId());
         return request;
     }
 
@@ -91,7 +92,7 @@ public class AppSkuController extends BaseController implements
 
     @Override
     public void preDelete(UUID id) {
-        if (!permissionService.isOwner(id, repository)) {
+        if (!repository.existsByIdAndProductMerchantId(id, JwtUtils.getMerchantId())) {
             throw new AccessDeniedException("");
         }
     }
@@ -126,23 +127,12 @@ public class AppSkuController extends BaseController implements
         return "Sku not found";
     }
 
-    private void validateProductConfig(ProductEntity productEntity, Set<Long> variantIds) {
+    private void validateProductConfig(ProductEntity productEntity, Set<Long> variantIds, @Nullable UUID requestId) {
         if (CollectionUtils.isEmpty(variantIds)) {
             throw new InvalidException("Product configs can't empty");
         }
-        Map<Long, Set<Long>> configVariantSetMap = productEntity.getProductConfigs()
-                .stream()
-                .flatMap(pc -> pc.getVariants().stream()
-                        .filter(pv -> variantIds.contains(pv.getId()))
-                        .map(pv -> ImmutablePair.of(pc, pv.getId()))
-                )
-                .collect(groupingBy(o -> o.getLeft().getId(), HashMap::new, mapping(ImmutablePair::getRight, toSet())));
-        Map<Long, Set<Long>> productVariantMap = productEntity.getProductConfigs().stream()
-                .collect(groupingBy(
-                        ProductConfigEntity::getId,
-                        HashMap::new,
-                        flatMapping(pc -> pc.getVariants().stream().map(ProductVariantEntity::getId), toSet())
-                ));
+        Map<Long, Set<Long>> configVariantSetMap = toConfigVariantSetMap(productEntity, variantIds);
+        Map<Long, Set<Long>> productVariantMap = toProductVariantMap(productEntity);
         for (var config : productEntity.getProductConfigs()) {
             var requestVariants = configVariantSetMap.get(config.getId());
             if (requestVariants == null || CollectionUtils.isEmpty(requestVariants)) {
@@ -160,10 +150,34 @@ public class AppSkuController extends BaseController implements
         }
         var skus = repository.getAllByProductId(productEntity.getId());
         for (var sku : skus) {
+            if (Objects.equals(requestId, sku.getId())) {
+                continue;
+            }
             if (Set.copyOf(sku.getVariantIds()).containsAll(variantIds)) {
                 throw new InvalidException(conflict());
             }
         }
+    }
+
+    @NotNull
+    private static Map<Long, Set<Long>> toConfigVariantSetMap(ProductEntity productEntity, Set<Long> variantIds) {
+        return productEntity.getProductConfigs()
+                .stream()
+                .flatMap(pc -> pc.getVariants().stream()
+                        .filter(pv -> variantIds.contains(pv.getId()))
+                        .map(pv -> ImmutablePair.of(pc, pv.getId()))
+                )
+                .collect(groupingBy(o -> o.getLeft().getId(), HashMap::new, mapping(ImmutablePair::getRight, toSet())));
+    }
+
+    @NotNull
+    private static Map<Long, Set<Long>> toProductVariantMap(ProductEntity productEntity) {
+        return productEntity.getProductConfigs().stream()
+                .collect(groupingBy(
+                        ProductConfigEntity::getId,
+                        HashMap::new,
+                        flatMapping(pc -> pc.getVariants().stream().map(ProductVariantEntity::getId), toSet())
+                ));
     }
 
     @Override
