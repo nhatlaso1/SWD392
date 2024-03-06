@@ -24,4 +24,6 @@ public interface ProductRepository extends
                 WHERE p.id = :id
             """)
     Optional<ProductEntity> findByIdFetchConfigVariant(@Param("id") Long id);
+
+    boolean existsByIdAndMerchantId(Long id, Long merchantId);
 }

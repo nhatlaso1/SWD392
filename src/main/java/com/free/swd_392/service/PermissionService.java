@@ -4,6 +4,7 @@ import com.free.swd_392.entity.audit.Audit;
 import com.free.swd_392.shared.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -27,5 +28,17 @@ public class PermissionService {
         return repository.findById(id)
                 .filter(this::isOwner)
                 .isPresent();
+    }
+
+    public <E extends Audit<?>> void check(E entity) {
+        if (!isOwner(entity)) {
+            throw new AccessDeniedException("");
+        }
+    }
+
+    public <A extends Serializable, E extends Audit<String>, R extends JpaRepository<E, A>> void check(A id, R repository) {
+        if (!isOwner(id, repository)) {
+            throw new AccessDeniedException("");
+        }
     }
 }

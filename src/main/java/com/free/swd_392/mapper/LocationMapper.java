@@ -12,4 +12,12 @@ import org.mapstruct.*;
         injectionStrategy = InjectionStrategy.CONSTRUCTOR
 )
 public abstract class LocationMapper implements DtoMapper<LocationInfo, LocationInfo, LocationEntity> {
+
+    @Named("toLocationName")
+    public String toLocationName(LocationEntity location) {
+        if (location == null) {
+            return null;
+        }
+        return location.getName();
+    }
 }

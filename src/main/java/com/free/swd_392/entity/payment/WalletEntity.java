@@ -1,8 +1,10 @@
 package com.free.swd_392.entity.payment;
 
 import com.free.swd_392.entity.audit.Audit;
+import com.free.swd_392.entity.merchant.MerchantEntity;
 import com.free.swd_392.entity.user.UserEntity;
 import com.free.swd_392.enums.WalletStatus;
+import com.free.swd_392.enums.WalletType;
 import com.free.swd_392.shared.constant.TableName;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,11 +30,16 @@ public class WalletEntity extends Audit<String> {
     @Column(length = 10)
     @Enumerated(EnumType.STRING)
     private WalletStatus status;
-    @Column(name = "user_id", nullable = false)
+    @Column(length = 10)
+    @Enumerated(EnumType.STRING)
+    private WalletType type;
+    @Column(name = "user_id")
     private String userId;
+    @Column(name = "merchant_id")
+    private String merchantId;
 
     @ToString.Exclude
-    @OneToOne(fetch = FetchType.LAZY, targetEntity = UserEntity.class, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, targetEntity = UserEntity.class)
     @JoinColumn(
             name = "user_id",
             foreignKey = @ForeignKey(name = "fk_wallet_user_id"),
@@ -41,4 +48,14 @@ public class WalletEntity extends Audit<String> {
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
     private UserEntity user;
+    @ToString.Exclude
+    @OneToOne(fetch = FetchType.LAZY, targetEntity = UserEntity.class)
+    @JoinColumn(
+            name = "merchant_id",
+            foreignKey = @ForeignKey(name = "fk_wallet_merchant_id"),
+            insertable = false,
+            updatable = false
+    )
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private MerchantEntity merchant;
 }

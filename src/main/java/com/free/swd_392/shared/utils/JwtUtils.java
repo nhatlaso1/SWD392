@@ -19,6 +19,10 @@ public class JwtUtils {
         return getUserDetailsFromToken().getSubject();
     }
 
+    public static Long getMerchantId() {
+        return (Long) getUserDetailsFromToken().getClaims().get("merchant_id");
+    }
+
     public static String getSessionFromToken() {
         return getUserDetailsFromToken().getSessionState();
     }

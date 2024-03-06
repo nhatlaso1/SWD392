@@ -13,7 +13,8 @@ import org.mapstruct.*;
         componentModel = MappingConstants.ComponentModel.SPRING,
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-        injectionStrategy = InjectionStrategy.CONSTRUCTOR
+        injectionStrategy = InjectionStrategy.CONSTRUCTOR,
+        uses = {AppProductVariantMapper.class}
 )
 public abstract class AppSkuMapper implements
         DtoMapper<SkuInfo, SkuInfo, SkuEntity>,
@@ -29,4 +30,9 @@ public abstract class AppSkuMapper implements
     @Named("updateConvertToEntityListMapper")
     @Mapping(target = "variantIds", source = "variantIds", ignore = true)
     public abstract void updateConvertToEntity(@MappingTarget SkuEntity entity, UpdateSkuRequest details);
+
+    @Override
+    @Named("convertToInfoMapper")
+    @Mapping(target = "variants", source = "variants", qualifiedByName = "convertToInfoListMapper")
+    public abstract SkuInfo convertToInfo(SkuEntity entity);
 }
