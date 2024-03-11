@@ -1,5 +1,6 @@
 package com.free.swd_392.dto.product.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.free.swd_392.core.model.ICreateData;
 import com.free.swd_392.dto.product.ProductConfigInfo;
 import com.free.swd_392.enums.ProductStatus;
@@ -26,4 +27,8 @@ public class CreateProductRequest implements ICreateData<Long> {
     @NotNull
     private Long categoryId;
     private List<@Valid ProductConfigInfo> productConfigs;
+
+    @JsonIgnore
+    private Long merchantId;
+
 }

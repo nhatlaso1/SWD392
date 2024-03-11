@@ -58,7 +58,7 @@ public interface IUpdateModelController<I, D extends IBaseData<I>, U extends IBa
             details = convertToDetails(entity);
         }
         postUpdate(entity, request, details);
-        return null;
+        return details;
     }
 
     default void postUpdate(E entity, U request, @Nullable D details) {

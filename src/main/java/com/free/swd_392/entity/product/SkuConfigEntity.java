@@ -26,7 +26,7 @@ public class SkuConfigEntity implements Serializable {
 
     @Id
     @EmbeddedId
-    private SkuConfigId id;
+    private SkuConfigId id = new SkuConfigId();
 
     @ToString.Exclude
     @MapsId("variantId")

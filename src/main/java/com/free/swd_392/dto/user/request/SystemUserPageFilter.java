@@ -2,7 +2,10 @@ package com.free.swd_392.dto.user.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.free.swd_392.core.model.IPageFilter;
+import com.free.swd_392.entity.user.RoleEntity;
 import com.free.swd_392.entity.user.UserEntity;
+import com.free.swd_392.enums.RoleKind;
+import com.free.swd_392.shared.utils.JwtUtils;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -36,6 +39,12 @@ public class SystemUserPageFilter implements IPageFilter, Specification<UserEnti
         if (StringUtils.isNotBlank(getPhone())) {
             predicates.add(cb.equal(cb.lower(root.get(UserEntity.Fields.phone)), "%" + getPhone().toLowerCase() + "%"));
         }
+
+        if (StringUtils.isNotBlank(JwtUtils.getUserId())) {
+            predicates.add(cb.notEqual(root.get(UserEntity.Fields.id), JwtUtils.getUserId()));
+        }
+
+        predicates.add(cb.notEqual(root.get(UserEntity.Fields.role).get(RoleEntity.Fields.kind), RoleKind.SUPER_ADMIN_VALUE));
 
         root.fetch(UserEntity.Fields.role);
 

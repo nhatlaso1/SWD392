@@ -3,7 +3,6 @@ package com.free.swd_392.core.controller;
 import com.free.swd_392.core.converter.IdConverter;
 import com.free.swd_392.core.factory.Factory;
 import com.free.swd_392.core.factory.FactoryExceptionCode;
-import com.free.swd_392.core.model.BaseResponse;
 import com.free.swd_392.core.model.SuccessResponse;
 import com.free.swd_392.exception.InvalidException;
 import jakarta.validation.constraints.NotNull;

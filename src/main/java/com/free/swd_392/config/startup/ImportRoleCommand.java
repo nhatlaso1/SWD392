@@ -24,7 +24,8 @@ public class ImportRoleCommand implements CommandLineRunner {
                 List.of(
                         new RoleEntity().setKind(RoleKind.CMS),
                         new RoleEntity().setKind(RoleKind.SUPER_ADMIN),
-                        new RoleEntity().setKind(RoleKind.USER)
+                        new RoleEntity().setKind(RoleKind.USER),
+                        new RoleEntity().setKind(RoleKind.MERCHANT)
                 )
         );
     }

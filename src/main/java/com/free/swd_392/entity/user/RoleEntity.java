@@ -6,6 +6,7 @@ import com.free.swd_392.shared.constant.TableName;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.Accessors;
+import lombok.experimental.FieldNameConstants;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.UUID;
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
+@FieldNameConstants
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)

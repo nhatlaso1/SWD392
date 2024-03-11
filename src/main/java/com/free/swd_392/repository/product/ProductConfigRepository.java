@@ -11,4 +11,5 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ProductConfigRepository extends
         JpaRepository<ProductConfigEntity, Long>,
         JpaSpecificationExecutor<ProductConfigEntity> {
+
 }

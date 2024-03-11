@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
-import org.springframework.security.authorization.AuthorityAuthorizationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -61,6 +60,7 @@ public class SecurityConfig {
                                 .requestMatchers(ignoreAuthorizationProperties.getIgnoreAuthorization().toArray(String[]::new)).permitAll()
                                 .requestMatchers("/api/v1/app/product/**").hasRole(MERCHANT_VALUE)
                                 .requestMatchers("/api/v1/app/product-sku/**").hasRole(MERCHANT_VALUE)
+                                .requestMatchers("/api/v1/merchant/**").hasRole(MERCHANT_VALUE)
                                 .requestMatchers("/api/v1/system/**").hasRole(CMS_VALUE)
                                 .requestMatchers("/api/v1/system/user/**").hasRole(SUPER_ADMIN_VALUE)
                                 .requestMatchers("/api/v1/system/product-category/**").hasRole(SUPER_ADMIN_VALUE)
@@ -102,7 +102,7 @@ public class SecurityConfig {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowCredentials(true);
         corsConfiguration.setAllowedOriginPatterns(List.of("*"));
-        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         corsConfiguration.setAllowedHeaders(List.of("Origin", "Authorization", "Cache-Control", "Content-Type", "Accept", "Accept-Encoding", "X-Requested-With", "remember-me"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);

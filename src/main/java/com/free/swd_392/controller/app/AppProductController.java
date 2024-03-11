@@ -9,11 +9,14 @@ import com.free.swd_392.dto.product.ProductInfo;
 import com.free.swd_392.dto.product.request.CreateProductRequest;
 import com.free.swd_392.dto.product.request.UpdateProductRequest;
 import com.free.swd_392.dto.product.request.filter.AppProductPageFilter;
+import com.free.swd_392.dto.product.request.filter.PublicProductPageFilter;
 import com.free.swd_392.entity.product.ProductEntity;
 import com.free.swd_392.exception.InvalidException;
 import com.free.swd_392.mapper.app.AppProductMapper;
+import com.free.swd_392.mapper.app.AppSkuMapper;
 import com.free.swd_392.repository.product.ProductCategoryRepository;
 import com.free.swd_392.repository.product.ProductRepository;
+import com.free.swd_392.repository.product.SkuRepository;
 import com.free.swd_392.shared.utils.JwtUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -26,6 +29,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,24 +49,50 @@ public class AppProductController extends BaseController implements
 
     private final ProductRepository repository;
     private final ProductCategoryRepository productCategoryRepository;
+    private final SkuRepository skuRepository;
     private final AppProductMapper appProductMapper;
+    private final AppSkuMapper appSkuMapper;
 
     @Transactional
     @GetMapping("/public/info/page/filter")
-    public ResponseEntity<BasePagingResponse<ProductInfo>> getProductPagePublic(@ParameterObject @Valid AppProductPageFilter filter,
+    public ResponseEntity<BasePagingResponse<ProductInfo>> getProductPagePublic(@ParameterObject @Valid PublicProductPageFilter filter,
                                                                                 @ParameterObject Pageable pageable) {
-        return IGetInfoPageWithFilterController.super.getInfoPageWithFilter(filter, pageable);
+        var page = repository.findProductFilter(
+                filter.getName(),
+                filter.getCategoryIds(),
+                filter.getFromPrice(),
+                filter.getToPrice(),
+                pageable);
+        return success(new BasePagingResponse<>(page));
     }
 
     @Transactional
     @GetMapping("/public/{id}/details")
     public ResponseEntity<BaseResponse<ProductDetails>> getProductDetailsPublic(@PathVariable("id") @NotNull Long productId) {
-        return success(aroundGetDetails(productId));
+        var productDetails = aroundGetDetails(productId);
+        var sku = skuRepository.getAllByProductIdAndVariantsNotSoldOut(productId);
+        if (!CollectionUtils.isEmpty(sku)) {
+            var minPrice = sku.get(0).getPrice();
+            var maxPrice = sku.get(0).getPrice();
+            for (var s : sku) {
+                if (minPrice.compareTo(s.getPrice()) > 0) {
+                    minPrice = s.getPrice();
+                }
+                if (maxPrice.compareTo(s.getPrice()) < 0) {
+                    maxPrice = s.getPrice();
+                }
+            }
+            productDetails.setFromPrice(minPrice);
+            productDetails.setToPrice(maxPrice);
+            productDetails.setSkus(appSkuMapper.convertToInfoNoVariantsList(sku));
+        }
+        return success(productDetails);
     }
 
     @Override
     public CreateProductRequest preCreate(CreateProductRequest request) {
         productCategoryRepository.checkExits(request.getCategoryId());
+        request.setMerchantId(JwtUtils.getMerchantId());
         return request;
     }
 
