@@ -80,6 +80,7 @@ spring:
         - /api/v1/auth/**
         - /api/v1/location/**
         - /api/v1/payment/**
+        - /api/v1/system/user/admin/create
     oauth2:
       resourceserver:
         jwt:

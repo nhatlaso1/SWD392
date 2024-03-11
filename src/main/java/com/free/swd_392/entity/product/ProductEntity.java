@@ -37,7 +37,7 @@ import java.util.List;
                         LEFT JOIN (
                             SELECT pc.id, pc.product_id, SUM(IF(pv.is_sold_out = FALSE, 1, 0)) AS variant_available
                             FROM auction_product_config pc
-                                LEFT JOIN auction_swd_392.auction_product_variant pv ON pc.id = pv.product_config_id
+                                LEFT JOIN auction_product_variant pv ON pc.id = pv.product_config_id
                             GROUP BY pc.id
                         ) AS pc ON pc.product_id = p.id
                     WHERE p.status = 'ACTIVE'
@@ -60,7 +60,7 @@ import java.util.List;
                         LEFT JOIN (
                             SELECT pc.id, pc.product_id, SUM(IF(pv.is_sold_out = FALSE, 1, 0)) AS variant_available
                             FROM auction_product_config pc
-                                LEFT JOIN auction_swd_392.auction_product_variant pv ON pc.id = pv.product_config_id
+                                LEFT JOIN auction_product_variant pv ON pc.id = pv.product_config_id
                             GROUP BY pc.id
                         ) AS pc ON pc.product_id = p.id
                     WHERE p.status = 'ACTIVE'
