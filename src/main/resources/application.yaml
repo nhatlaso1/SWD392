@@ -1,4 +1,5 @@
 server:
+  host: ${SERVER_HOST:localhost}
   port: ${SERVER_PORT:8080}
   path: ${SERVER_PATH:}
 
@@ -78,6 +79,7 @@ spring:
         - /api/v1/media/**
         - /api/v1/auth/**
         - /api/v1/location/**
+        - /api/v1/payment/**
     oauth2:
       resourceserver:
         jwt:
@@ -92,6 +94,20 @@ spring:
     secure: true
     create-bucket: false
     pre-signed-upload-duration: 60
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connectTimeout: 5000
+            readTimeout: 10000
+            logger-level: full
+          paypal:
+            url: ${SPRING_CLOUD_OPENFEIGN_CLIENT_CONFIG_PAYPAL_URL:https://api-m.sandbox.paypal.com}
+            logger-level: full
+          currency:
+            url: ${SPRING_CLOUD_OPENFEIGN_CLIENT_CONFIG_CURRENCY_URL:https://open.er-api.com}
+            logger-level: full
 springdoc:
   api-docs:
     path: /v3/api-docs
@@ -114,3 +130,10 @@ logging:
   level:
     com.free.swd_392: trace
     org.springframework.security: debug
+
+paypal:
+  client-id: ${PAYPAL_CLIENT_ID:AcsOD22Hu8gEJTzaw-VkYmzcbZ4sGE-KTl1q6nhR2R4zn0VU8JcT1NfzEp3S9-31BEPoUWu2PXkoEWYH}
+  secret-key: ${PAYPAL_SECRET_KEY:EM-5YL4AsRjxTW5P6S96uzsbw-Fb5b2t2OXaZudzt5ZkSU8XbVkRXh1Slia9predd589OA-fh8w69Cg7}
+  approve-url: ${PAYPAL_DEPOSIT_URL:http://${server.host}:${server.port}${server.path}/api/v1/payment/checkout/approve/}
+  cancel-url: ${PAYPAL_DEPOSIT_URL:http://${server.host}:${server.port}${server.path}/api/v1/payment/checkout/cancel/}
+  app-redirect-url: ${APP_REDIRECT_URL:http://localhost:3000/order}

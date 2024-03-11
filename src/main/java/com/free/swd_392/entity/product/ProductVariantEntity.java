@@ -26,6 +26,7 @@ public class ProductVariantEntity {
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
+            name = "product_config_id",
             insertable = false,
             updatable = false
     )

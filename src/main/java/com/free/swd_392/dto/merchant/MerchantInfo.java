@@ -22,6 +22,7 @@ public class MerchantInfo implements IBaseData<Long> {
     private String addressDetails;
     private String addressNote;
     private MerchantStatus status;
+    private String representativeName;
 
     private String facebook;
     private String zalo;

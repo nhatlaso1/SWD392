@@ -1,5 +1,6 @@
 package com.free.swd_392.entity.product;
 
+import com.free.swd_392.dto.product.ProductInfo;
 import com.free.swd_392.entity.audit.Audit;
 import com.free.swd_392.entity.merchant.MerchantEntity;
 import com.free.swd_392.enums.ProductStatus;
@@ -15,6 +16,7 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
@@ -24,11 +26,75 @@ import java.util.List;
 @FieldNameConstants
 @Entity
 @Table(name = TableName.PRODUCT)
+@NamedNativeQuery(
+        name = "findProductFilter",
+        query = """
+                    SELECT DISTINCT (p.id), p.name, p.image, p.status, p.category_id,
+                            c.name as category_name, MIN(sku.price) as min_price, MAX(sku.price) as max_price
+                    FROM auction_product p
+                        LEFT JOIN auction_product_sku sku ON p.id = sku.product_id
+                        LEFT JOIN auction_product_category c ON p.category_id = c.id
+                        LEFT JOIN (
+                            SELECT pc.id, pc.product_id, SUM(IF(pv.is_sold_out = FALSE, 1, 0)) AS variant_available
+                            FROM auction_product_config pc
+                                LEFT JOIN auction_swd_392.auction_product_variant pv ON pc.id = pv.product_config_id
+                            GROUP BY pc.id
+                        ) AS pc ON pc.product_id = p.id
+                    WHERE p.status = 'ACTIVE'
+                        AND (:name IS NULL OR MATCH(p.name) AGAINST(:name))
+                        AND (COALESCE(:categoryIds) IS NULL OR p.category_id IN (:categoryIds))
+                        AND (:fromPrice IS NULL OR sku.price >= :fromPrice)
+                        AND (:toPrice IS NULL OR sku.price <= :toPrice)
+                        AND pc.variant_available > 0
+                    GROUP BY p.id
+                """,
+        resultSetMapping = "findProductFilterMapper"
+)
+@NamedNativeQuery(
+        name = "findProductFilter.count",
+        query = """
+                    SELECT COUNT(*) AS cnt
+                    FROM auction_product p
+                        LEFT JOIN auction_product_sku sku ON p.id = sku.product_id
+                        LEFT JOIN auction_product_category c ON p.category_id = c.id
+                        LEFT JOIN (
+                            SELECT pc.id, pc.product_id, SUM(IF(pv.is_sold_out = FALSE, 1, 0)) AS variant_available
+                            FROM auction_product_config pc
+                                LEFT JOIN auction_swd_392.auction_product_variant pv ON pc.id = pv.product_config_id
+                            GROUP BY pc.id
+                        ) AS pc ON pc.product_id = p.id
+                    WHERE p.status = 'ACTIVE'
+                        AND (:name IS NULL OR MATCH(p.name) AGAINST(:name))
+                        AND (COALESCE(:categoryIds) IS NULL OR p.category_id IN (:categoryIds))
+                        AND (:fromPrice IS NULL OR sku.price >= :fromPrice)
+                        AND (:toPrice IS NULL OR sku.price <= :toPrice)
+                        AND pc.variant_available > 0
+                    GROUP BY p.id
+                """,
+        resultSetMapping = "findProductFilterMapper.count"
+)
+@SqlResultSetMapping(
+        name = "findProductFilterMapper",
+        classes = @ConstructorResult(
+                targetClass = ProductInfo.class,
+                columns = {
+                        @ColumnResult(name = "id", type = Long.class),
+                        @ColumnResult(name = "name", type = String.class),
+                        @ColumnResult(name = "image", type = String.class),
+                        @ColumnResult(name = "status", type = ProductStatus.class),
+                        @ColumnResult(name = "category_id", type = Long.class),
+                        @ColumnResult(name = "category_name", type = String.class),
+                        @ColumnResult(name = "min_price", type = BigDecimal.class),
+                        @ColumnResult(name = "max_price", type = BigDecimal.class)
+                }
+        )
+)
+@SqlResultSetMapping(name = "findProductFilterMapper.count", columns = @ColumnResult(name = "cnt"))
 public class ProductEntity extends Audit<String> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(length = 200)
+    @Column(columnDefinition = "VARCHAR(200) NOT NULL, FULLTEXT KEY nameFullText(name)")
     private String name;
     @Column(columnDefinition = "MEDIUMTEXT")
     private String description;

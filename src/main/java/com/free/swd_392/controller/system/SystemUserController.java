@@ -3,8 +3,10 @@ package com.free.swd_392.controller.system;
 import com.free.swd_392.controller.BaseController;
 import com.free.swd_392.core.controller.*;
 import com.free.swd_392.core.model.BaseResponse;
+import com.free.swd_392.core.model.SuccessResponse;
 import com.free.swd_392.dto.user.UserDetails;
 import com.free.swd_392.dto.user.UserInfo;
+import com.free.swd_392.dto.user.request.ChangeUserStatusRequest;
 import com.free.swd_392.dto.user.request.SystemUserPageFilter;
 import com.free.swd_392.entity.user.RoleEntity;
 import com.free.swd_392.entity.user.UserEntity;
@@ -30,11 +32,9 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -47,7 +47,6 @@ import java.util.Map;
 public class SystemUserController extends BaseController implements
         ICreateModelController<String, UserDetails, UserDetails, String, UserEntity>,
         IUpdateModelController<String, UserDetails, UserDetails, String, UserEntity>,
-        IDeleteModelByIdController<String, String, UserEntity>,
         IGetInfoPageWithFilterController<String, UserInfo, String, UserEntity, SystemUserPageFilter>,
         IGetDetailsController<String, UserDetails, String, UserEntity>,
         IGetDetailsByContextController<String, UserDetails, String, UserEntity> {
@@ -58,6 +57,19 @@ public class SystemUserController extends BaseController implements
     private final RoleRepository roleRepository;
     private final FirebaseAuth firebaseAuth;
     private final ApplicationEventPublisher applicationEventPublisher;
+
+    @Transactional
+    @PatchMapping("/change-status")
+    public ResponseEntity<SuccessResponse> changeStatus(@RequestBody @Valid ChangeUserStatusRequest request) throws FirebaseAuthException {
+        if (!repository.existsById(request.getUserId())) {
+            throw new InvalidException(notFound());
+        }
+        var updateRequest = new UserRecord.UpdateRequest(request.getUserId())
+                .setDisabled(!request.isActive());
+        firebaseAuth.updateUser(updateRequest);
+        repository.updateStatus(request.getUserId(), request.isActive());
+        return success();
+    }
 
     @Operation(security = @SecurityRequirement(name = "x-api-key"))
     @PostMapping("/admin/create")
@@ -166,16 +178,6 @@ public class SystemUserController extends BaseController implements
                         .hasAttachment(false)
                         .build()
         );
-    }
-
-    @Override
-    public void postDelete(String id) {
-        try {
-            firebaseAuth.deleteUser(id);
-        } catch (FirebaseAuthException e) {
-            log.error("Firebase Auth Error:", e);
-            throw new InvalidException(internalServerError());
-        }
     }
 
     @Override

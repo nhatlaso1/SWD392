@@ -34,7 +34,6 @@ ext {
     /**
      * Data
      */
-    hibernateVersion = '6.4.1.Final'
     mysqlVersion = '8.3.0'
     hypersistenceVersion = '3.7.3'
 
@@ -42,7 +41,7 @@ ext {
      * Spring Boot
      */
     springBootVersion = '3.2.2'
-    springCloudVersion = '2022.0.3'
+    springCloudVersion = '2023.0.0'
     springDocVersion = '2.3.0'
 
     /**
@@ -56,10 +55,12 @@ ext {
     commonLang3Version = '3.13.0'
     commonIOVersion = '2.11.0'
     minIOVersion = '8.5.8'
+    caffeineVersion = '3.1.8'
 }
 
 dependencies {
 
+    implementation platform("org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion")
     implementation platform("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
     implementation platform("io.jsonwebtoken:jjwt-root:$jjwtVersion")
 
@@ -84,12 +85,13 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocVersion") {
         exclude module: 'spring-webmvc'
     }
+    implementation "org.springframework.cloud:spring-cloud-starter-openfeign"
+    implementation "org.springframework.data:spring-data-envers"
 
     /**
      * Data
      */
     implementation "com.mysql:mysql-connector-j:$mysqlVersion"
-    implementation "org.hibernate.orm:hibernate-envers:$hibernateVersion"
     implementation "io.hypersistence:hypersistence-utils-hibernate-60:$hypersistenceVersion"
 
     /**
@@ -118,6 +120,7 @@ dependencies {
     implementation "commons-io:commons-io:$commonIOVersion"
     implementation "org.apache.commons:commons-lang3:$commonLang3Version"
     implementation "io.minio:minio:$minIOVersion"
+    implementation("com.github.ben-manes.caffeine:caffeine:$caffeineVersion")
 
 }
 

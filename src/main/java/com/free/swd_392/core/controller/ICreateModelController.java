@@ -58,7 +58,7 @@ public interface ICreateModelController<I, D extends IBaseData<I>, C extends IBa
             details = convertToDetails(entity);
         }
         postCreate(entity, request, details);
-        return null;
+        return details;
     }
 
     default void postCreate(E entity, C request, @Nullable D details) {

@@ -6,5 +6,7 @@ public enum MerchantStatus {
     IN_REVIEW,
     ACTIVE,
     INACTIVE,
-    LOCK
+    LOCK;
+
+
 }

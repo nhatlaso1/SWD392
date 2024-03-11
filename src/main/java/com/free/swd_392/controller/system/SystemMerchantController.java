@@ -9,8 +9,8 @@ import com.free.swd_392.dto.merchant.MerchantInfo;
 import com.free.swd_392.dto.merchant.request.SystemApproveOrRejectMerchantRequest;
 import com.free.swd_392.dto.merchant.request.filter.SystemMerchantInfoPageFilter;
 import com.free.swd_392.entity.merchant.MerchantEntity;
+import com.free.swd_392.enums.MerchantStatus;
 import com.free.swd_392.enums.RoleKind;
-import com.free.swd_392.exception.InvalidException;
 import com.free.swd_392.mapper.system.SystemMerchantMapper;
 import com.free.swd_392.repository.merchant.MerchantRepository;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,10 +26,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
-
-import static com.free.swd_392.enums.MerchantStatus.*;
 
 @Tag(name = "System Merchant Controller")
 @RestController
@@ -43,29 +41,27 @@ public class SystemMerchantController extends BaseController implements
     private final SystemMerchantMapper systemMerchantMapper;
     private final FirebaseAuth firebaseAuth;
 
-    @PostMapping("/approval")
+    @PostMapping("/change-status")
     @Transactional
     public ResponseEntity<SuccessResponse> approveOrRejectMerchant(@Valid @RequestBody SystemApproveOrRejectMerchantRequest request) throws FirebaseAuthException {
         var merchantEntity = findById(request.getMerchantId(), notFound());
-        if (!IN_REVIEW.equals(merchantEntity.getStatus())) {
-            throw new InvalidException("Invalid merchant state");
+        merchantEntity.setStatus(request.getStatus());
+        var listRole = new ArrayList<String>();
+        listRole.add(RoleKind.USER_VALUE);
+        if (MerchantStatus.ACTIVE.equals(request.getStatus())) {
+            listRole.add(RoleKind.MERCHANT_VALUE);
         }
-        if (Boolean.TRUE.equals(request.getApprove())) {
-            merchantEntity.setStatus(ACTIVE);
-            firebaseAuth.setCustomUserClaims(
-                    merchantEntity.getOwnerId(),
-                    Map.of("resource_access", Map.of(
-                                    "auction", Map.of(
-                                            "roles",
-                                            List.of(RoleKind.USER_VALUE, RoleKind.MERCHANT_VALUE)
-                                    )
-                            ),
-                            "merchant_id", merchantEntity.getId()
-                    )
-            );
-        } else {
-            merchantEntity.setStatus(DRAFT);
-        }
+        firebaseAuth.setCustomUserClaims(
+                merchantEntity.getOwnerId(),
+                Map.of("resource_access", Map.of(
+                                "auction", Map.of(
+                                        "roles",
+                                        listRole
+                                )
+                        ),
+                        "merchant_id", merchantEntity.getId()
+                )
+        );
         merchantEntity.setApprovalReason(request.getReason());
         repository.save(merchantEntity);
         return success();

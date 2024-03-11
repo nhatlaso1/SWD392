@@ -9,6 +9,8 @@ import com.free.swd_392.dto.product.request.UpdateSkuRequest;
 import com.free.swd_392.entity.product.SkuEntity;
 import org.mapstruct.*;
 
+import java.util.List;
+
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING,
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
@@ -35,4 +37,13 @@ public abstract class AppSkuMapper implements
     @Named("convertToInfoMapper")
     @Mapping(target = "variants", source = "variants", qualifiedByName = "convertToInfoListMapper")
     public abstract SkuInfo convertToInfo(SkuEntity entity);
+
+    @Named("convertToInfoNoVariantsMapper")
+    @Mapping(target = "variants", ignore = true)
+    @Mapping(target = "variantIds", source = "variantIds")
+    public abstract SkuInfo convertToInfoNoVariants(SkuEntity entity);
+
+    @Named("convertToInfoNoVariantsListMapper")
+    @IterableMapping(elementTargetType = SkuInfo.class, qualifiedByName = "convertToInfoNoVariantsMapper")
+    public abstract List<SkuInfo> convertToInfoNoVariantsList(List<SkuEntity> entities);
 }

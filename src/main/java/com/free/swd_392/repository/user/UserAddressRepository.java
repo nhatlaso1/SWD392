@@ -22,10 +22,7 @@ public interface UserAddressRepository extends
     @Modifying
     @Query(value = """
                 UPDATE auction_user_address uae
-                SET is_default = CASE
-                                    WHEN id = :addressId THEN true
-                                    ELSE false
-                                END
+                SET is_default = IF(id = :addressId, true, false)
                 WHERE created_by = :userId
             """, nativeQuery = true)
     void updateUserAddressDefault(@Param("userId") String userId, @Param("addressId") Long addressId);
