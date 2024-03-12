@@ -14,6 +14,7 @@ import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Table;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldNameConstants;
 import org.hibernate.annotations.*;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
@@ -29,6 +30,7 @@ import static org.springframework.data.jpa.domain.AbstractAuditable_.CREATED_BY;
 @Getter
 @Setter
 @ToString
+@FieldNameConstants
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity

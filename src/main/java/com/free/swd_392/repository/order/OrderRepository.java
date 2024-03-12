@@ -1,5 +1,6 @@
 package com.free.swd_392.repository.order;
 
+import com.free.swd_392.dto.merchant.request.filter.MerchantOrderInfoPageFilter;
 import com.free.swd_392.dto.order.request.filter.AppUserOrderPageFilter;
 import com.free.swd_392.entity.order.OrderEntity;
 import com.free.swd_392.shared.projection.IBusinessPerformanceProjection;
@@ -77,6 +78,56 @@ public interface OrderRepository extends
     Page<OrderInfoProjection> findByFilters(AppUserOrderPageFilter filters, Pageable pageable);
 
     List<OrderEntity> findAllByPaymentId(UUID paymentId);
+
+    @Query(value = """
+
+                SELECT o.created_by AS createdBy,
+                    o.created_date AS createdDate,
+                    o.last_modified_by AS lastModifiedBy,
+                    o.last_modified_date AS lastModifiedDate,
+                    o.id AS uid,
+                    o.receiver_full_name AS receiverFullName,
+                    o.phone AS phone,
+                    lp.name AS provinceName,
+                    ld.name AS districtName,
+                    lw.name AS wardName,
+                    o.address_details AS addressDetails,
+                    o.sub_total AS subTotal,
+                    o.shipping_charge AS shippingCharge,
+                    o.discount AS discount,
+                    o.description AS description,
+                    o.payment_method AS paymentMethod,
+                    o.status AS status,
+                    (SELECT COUNT(*)
+                        FROM auction_order_item oi2
+                        WHERE oi2.order_id = o.id
+                        GROUP BY oi2.order_id) AS numItem,
+                    oi.id AS id,
+                    oi.product_name AS productName,
+                    oi.price AS price,
+                    oi.discount AS discount,
+                    oi.quantity AS quantity,
+                    oi.extra_variants AS extraVariants,
+                    oi.note AS note,
+                    oi.product_id  AS productId
+                FROM auction_order o
+                    INNER JOIN auction_location lp ON lp.id = o.province_id
+                    INNER JOIN auction_location ld ON ld.id = o.district_id
+                    INNER JOIN auction_location lw ON lw.id = o.ward_id
+                    INNER JOIN auction_order_item oi ON oi.id = (
+                        SELECT oi_temp.id
+                        FROM auction_order_item oi_temp
+                        WHERE oi_temp.order_id = o.id
+                        ORDER BY oi_temp.id LIMIT 1
+                    )
+                WHERE (:#{#filters.id} IS NULL OR o.id = :#{#filters.id})
+                    AND (:#{#filters.status} IS NULL OR o.status = :#{#filters.status == null ? null : #filters.status.name()})
+                    AND (:#{#filters.paymentMethod} IS NULL OR o.payment_method = :#{#filters.paymentMethod == null ? null : #filters.paymentMethod.name()})
+                    AND (:#{#filters.receiverFullName} IS NULL OR o.receiver_full_name LIKE :#{#filters.receiverFullName == null ? null : '%' + #filters.receiverFullName.toLowerCase() + '%'})
+                    AND (:#{#filters.phone} IS NULL OR o.phone LIKE :#{#filters.phone == null ? null : #filters.phone.toLowerCase() + '%'})
+                    AND o.merchant_id = :#{#filters.merchantId}
+            """, nativeQuery = true)
+    Page<OrderInfoProjection> findByFilters(@Param("filters") MerchantOrderInfoPageFilter filters, Pageable pageable);
 
     @Query(value = """
 

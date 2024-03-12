@@ -30,10 +30,16 @@ import java.util.List;
         name = "findProductFilter",
         query = """
                     SELECT DISTINCT (p.id), p.name, p.image, p.status, p.category_id,
-                            c.name as category_name, MIN(sku.price) as min_price, MAX(sku.price) as max_price
+                            c.name as category_name, sku_agg.min_price AS min_price, sku_agg.max_price AS max_price
                     FROM auction_product p
-                        LEFT JOIN auction_product_sku sku ON p.id = sku.product_id
                         LEFT JOIN auction_product_category c ON p.category_id = c.id
+                        LEFT JOIN (
+                            SELECT sku.product_id, COUNT(sku.id) AS skuNum, MIN(sku.price) as min_price, MAX(sku.price) as max_price
+                            FROM auction_product_sku sku
+                            WHERE (:fromPrice IS NULL OR sku.price >= :fromPrice)
+                                AND (:toPrice IS NULL OR sku.price <= :toPrice)
+                            GROUP BY sku.product_id
+                        ) AS sku_agg ON sku_agg.product_id = p.id
                         LEFT JOIN (
                             SELECT pc.id, pc.product_id, SUM(IF(pv.is_sold_out = FALSE, 1, 0)) AS variant_available
                             FROM auction_product_config pc
@@ -43,9 +49,8 @@ import java.util.List;
                     WHERE p.status = 'ACTIVE'
                         AND (:name IS NULL OR MATCH(p.name) AGAINST(:name))
                         AND (COALESCE(:categoryIds) IS NULL OR p.category_id IN (:categoryIds))
-                        AND (:fromPrice IS NULL OR sku.price >= :fromPrice)
-                        AND (:toPrice IS NULL OR sku.price <= :toPrice)
                         AND pc.variant_available > 0
+                        AND sku_agg.skuNum > 0
                     GROUP BY p.id
                 """,
         resultSetMapping = "findProductFilterMapper"
@@ -55,8 +60,14 @@ import java.util.List;
         query = """
                     SELECT COUNT(*) AS cnt
                     FROM auction_product p
-                        LEFT JOIN auction_product_sku sku ON p.id = sku.product_id
                         LEFT JOIN auction_product_category c ON p.category_id = c.id
+                        LEFT JOIN (
+                            SELECT sku.product_id, COUNT(sku.id) AS skuNum
+                            FROM auction_product_sku sku
+                            WHERE (:fromPrice IS NULL OR sku.price >= :fromPrice)
+                                AND (:toPrice IS NULL OR sku.price <= :toPrice)
+                            GROUP BY sku.product_id
+                        ) AS sku_agg ON sku_agg.product_id = p.id
                         LEFT JOIN (
                             SELECT pc.id, pc.product_id, SUM(IF(pv.is_sold_out = FALSE, 1, 0)) AS variant_available
                             FROM auction_product_config pc
@@ -66,9 +77,8 @@ import java.util.List;
                     WHERE p.status = 'ACTIVE'
                         AND (:name IS NULL OR MATCH(p.name) AGAINST(:name))
                         AND (COALESCE(:categoryIds) IS NULL OR p.category_id IN (:categoryIds))
-                        AND (:fromPrice IS NULL OR sku.price >= :fromPrice)
-                        AND (:toPrice IS NULL OR sku.price <= :toPrice)
                         AND pc.variant_available > 0
+                        AND sku_agg.skuNum > 0
                     GROUP BY p.id
                 """,
         resultSetMapping = "findProductFilterMapper.count"
