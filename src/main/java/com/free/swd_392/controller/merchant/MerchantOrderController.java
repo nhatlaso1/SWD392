@@ -7,9 +7,10 @@ import com.free.swd_392.core.model.BasePagingResponse;
 import com.free.swd_392.core.model.BaseResponse;
 import com.free.swd_392.core.model.SuccessResponse;
 import com.free.swd_392.dto.merchant.request.filter.MerchantOrderInfoPageFilter;
+import com.free.swd_392.dto.order.OrderDetails;
 import com.free.swd_392.dto.order.OrderInfo;
 import com.free.swd_392.dto.order.request.BusinessPerformanceRequest;
-import com.free.swd_392.dto.order.request.MerchantChangeOrderStatusRequest;
+import com.free.swd_392.dto.order.request.ChangeOrderStatusRequest;
 import com.free.swd_392.entity.order.OrderEntity;
 import com.free.swd_392.enums.OrderStatus;
 import com.free.swd_392.exception.InvalidException;
@@ -17,7 +18,7 @@ import com.free.swd_392.mapper.app.AppOrderMapper;
 import com.free.swd_392.repository.order.OrderRepository;
 import com.free.swd_392.shared.projection.IBusinessPerformanceProjection;
 import com.free.swd_392.shared.projection.IRevenueThisAndLastMonthProjection;
-import com.free.swd_392.shared.projection.OrderInfoProjection;
+import com.free.swd_392.shared.projection.MerchantOrderInfoProjection;
 import com.free.swd_392.shared.utils.JwtUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -42,7 +43,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class MerchantOrderController extends BaseController implements
         IGetInfoPageWithFilterController<UUID, OrderInfo, UUID, OrderEntity, MerchantOrderInfoPageFilter>,
-        IGetDetailsController<UUID, OrderInfo, UUID, OrderEntity> {
+        IGetDetailsController<UUID, OrderDetails, UUID, OrderEntity> {
 
     private final OrderRepository repository;
     private final AppOrderMapper appOrderMapper;
@@ -59,7 +60,7 @@ public class MerchantOrderController extends BaseController implements
 
     @Transactional
     @PatchMapping("/change-status")
-    public ResponseEntity<SuccessResponse> changeStatus(@Valid @RequestBody MerchantChangeOrderStatusRequest request) {
+    public ResponseEntity<SuccessResponse> changeStatus(@Valid @RequestBody ChangeOrderStatusRequest request) {
         var order = findById(request.getId(), notFound());
         if (!Objects.equals(order.getMerchantId(), JwtUtils.getMerchantId())) {
             throw new AccessDeniedException("");
@@ -75,12 +76,12 @@ public class MerchantOrderController extends BaseController implements
     @Override
     public BasePagingResponse<OrderInfo> aroundGetPageInfoWithFilter(MerchantOrderInfoPageFilter filter) {
         filter.setMerchantId(JwtUtils.getMerchantId());
-        Page<OrderInfoProjection> pageEntity = repository.findByFilters(filter, filter.getPageable());
-        return new BasePagingResponse<>(pageEntity, appOrderMapper::convertToInfoProjectionList);
+        Page<MerchantOrderInfoProjection> pageEntity = repository.findByFilters(filter, filter.getPageable());
+        return new BasePagingResponse<>(pageEntity, appOrderMapper::convertToMerchantInfoProjectionList);
     }
 
     @Override
-    public OrderInfo aroundGetDetails(UUID id) throws InvalidException {
+    public OrderDetails aroundGetDetails(UUID id) throws InvalidException {
         var order = repository.findOne((r, q, b) -> {
                     r.fetch(OrderEntity.Fields.province);
                     r.fetch(OrderEntity.Fields.district);
@@ -100,7 +101,7 @@ public class MerchantOrderController extends BaseController implements
     }
 
     @Override
-    public OrderInfo convertToDetails(OrderEntity entity) {
+    public OrderDetails convertToDetails(OrderEntity entity) {
         return appOrderMapper.convertToDetails(entity);
     }
 

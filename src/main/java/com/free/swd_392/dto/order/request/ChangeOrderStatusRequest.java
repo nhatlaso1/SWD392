@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.UUID;
 
 @Data
-public class MerchantChangeOrderStatusRequest {
+public class ChangeOrderStatusRequest {
 
     private UUID id;
     private OrderStatus status;
