@@ -5,8 +5,10 @@ import com.free.swd_392.core.controller.IGetDetailsController;
 import com.free.swd_392.core.controller.IGetInfoPageWithFilterController;
 import com.free.swd_392.core.model.BasePagingResponse;
 import com.free.swd_392.core.model.BaseResponse;
+import com.free.swd_392.core.model.SuccessResponse;
 import com.free.swd_392.dto.order.OrderDetails;
 import com.free.swd_392.dto.order.OrderInfo;
+import com.free.swd_392.dto.order.request.ChangeOrderStatusRequest;
 import com.free.swd_392.dto.order.request.CreateOrderItemRequest;
 import com.free.swd_392.dto.order.request.CreateOrderRequest;
 import com.free.swd_392.dto.order.request.filter.AppUserOrderPageFilter;
@@ -35,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -116,6 +119,21 @@ public class AppOrderController extends BaseController implements
         var response = new CreateOrderResponse();
         response.setPaymentUrl(paymentService.createUrlByOrder(List.of(order)));
         return success(response);
+    }
+
+    @Transactional
+    @PatchMapping("/change-status")
+    public ResponseEntity<SuccessResponse> changeStatus(@Valid @RequestBody ChangeOrderStatusRequest request) {
+        var order = findById(request.getId(), notFound());
+        if (!Objects.equals(order.getCreatedBy(), JwtUtils.getUserId())) {
+            throw new AccessDeniedException("");
+        }
+        if (!OrderStatus.validateNextState(order.getStatus(), request.getStatus())) {
+            throw new InvalidException("Invalid state, available: " + OrderStatus.getAvailableStates(order.getStatus()));
+        }
+        order.setStatus(request.getStatus());
+        repository.save(order);
+        return success();
     }
 
     @Override

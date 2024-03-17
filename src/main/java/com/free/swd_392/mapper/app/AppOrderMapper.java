@@ -5,6 +5,7 @@ import com.free.swd_392.dto.order.OrderDetails;
 import com.free.swd_392.dto.order.OrderInfo;
 import com.free.swd_392.entity.order.OrderEntity;
 import com.free.swd_392.mapper.LocationMapper;
+import com.free.swd_392.shared.projection.MerchantOrderInfoProjection;
 import com.free.swd_392.shared.projection.OrderInfoProjection;
 import org.mapstruct.*;
 
@@ -26,6 +27,12 @@ public abstract class AppOrderMapper implements
 
     @IterableMapping(elementTargetType = OrderInfo.class, qualifiedByName = "convertToInfoProjectionMapper")
     public abstract List<OrderInfo> convertToInfoProjectionList(List<OrderInfoProjection> orders);
+
+    @Named("convertToMerchantInfoProjectionMapper")
+    public abstract OrderInfo convertToInfo(MerchantOrderInfoProjection projection);
+
+    @IterableMapping(elementTargetType = OrderInfo.class, qualifiedByName = "convertToMerchantInfoProjectionMapper")
+    public abstract List<OrderInfo> convertToMerchantInfoProjectionList(List<MerchantOrderInfoProjection> orders);
 
     @Override
     @InheritConfiguration(name = "convertToInfo")
